@@ -1,5 +1,11 @@
 import { auth } from "@/firebaseConfig";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+} from "firebase/auth";
 
 
 export const signUp = async (email:string, password:string) => {
@@ -32,6 +38,20 @@ export const signIn = async (email:string, password:string) => {
     } catch (e) {
         // const errorCode = e.code;
         // const errorMessage = e.message;
+        console.log("L");
+        console.log(e);
+        return false;
+    }
+
+}
+
+export const signUserOut = async () => {
+
+    try {
+        const userCredential = await signOut(auth)
+        console.log("Signed out");
+        return true;
+    } catch (e) {
         console.log("L");
         console.log(e);
         return false;

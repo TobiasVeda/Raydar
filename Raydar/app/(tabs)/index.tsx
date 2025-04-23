@@ -4,24 +4,38 @@ import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { getUvForecast } from "@/services/yrApi";
-import { signIn, signUp } from "@/services/auth";
-import {addUserdata, getUserdata} from "@/services/db";
+import {getUvForecast, UvStrength} from "@/services/yrApi";
+import {signIn, signUp, signUserOut} from "@/services/auth";
+import {setUserdata, getUserdata, UserDocument} from "@/services/db";
 import {useEffect} from "react";
+import {GeoPoint} from "firebase/firestore";
+import {UserSignOut} from "@/components/auth/UserSignOut";
+import {UserSignIn} from "@/components/auth/UserSignIn";
+import {UserSignUp} from "@/components/auth/UserSignUp";
 
 
 export default function HomeScreen() {
 
     useEffect(() => {
         const run = async () => {
-            // await signIn("tobiasveda@gmail.com", "Password1.");
-            // await addUserdata();
-            getUserdata();
-        };
+            let temp:UserDocument = {
+                username: "b",
+                favouriteLocations: [
+                    new GeoPoint(59.9139, 10.7522),
+                    new GeoPoint(10, 33)
+                ],
+                notificationsEnabled: false
+            }
 
+            // await signUserOut();
+            // await signIn("tobiasveda@gmail.com", "Password1.");
+            // await setUserdata(temp);
+            // getUserdata();
+            // getUvForecast(60.1, 9.58);
+        };
         run();
     }, []);
-    // getUvForecast(60.1, 9.58);
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -66,6 +80,9 @@ export default function HomeScreen() {
           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
         </ThemedText>
       </ThemedView>
+        <UserSignUp/>
+        <UserSignIn/>
+        <UserSignOut/>
     </ParallaxScrollView>
   );
 }

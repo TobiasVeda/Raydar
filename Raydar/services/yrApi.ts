@@ -1,5 +1,5 @@
 
-interface UV {
+interface UvStrength {
     timestamp:string,
     strength:number;
 }
@@ -18,7 +18,7 @@ export const getCompleteData = async (lat:number, lon:number) => {
 export const getUvForecast = async (lat:number, lon:number) => {
     let data = await getCompleteData(lat, lon);
 
-    let trimmedData:UV[] = [];
+    let trimmedData:UvStrength[] = [];
 
     for (let i = 0; i < data.properties.timeseries.length; i++) {
         trimmedData.push({
@@ -29,3 +29,5 @@ export const getUvForecast = async (lat:number, lon:number) => {
 
     return trimmedData;
 }
+
+export {UvStrength}
