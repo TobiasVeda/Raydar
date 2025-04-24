@@ -1,109 +1,166 @@
-import { StyleSheet, Image, Platform } from 'react-native';
+import React, { FC, useMemo } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    ScrollView,
+    Dimensions,
+    TouchableOpacity,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+/********************************
+ * EXPLORE SCREEN (UV Dashboard) *
+ ********************************/
 
-export default function TabTwoScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
-  );
+interface UvReadingProps {
+    uv: number;
 }
 
+const UvReading: FC<UvReadingProps> = ({ uv }) => {
+    const category = useMemo(() => {
+        if (uv <= 2) return 'Low';
+        if (uv <= 5) return 'Moderate';
+        if (uv <= 7) return 'High';
+        if (uv <= 10) return 'Very High';
+        return 'Extreme';
+    }, [uv]);
+
+    return (
+        <View style={styles.readingContainer}>
+            {/* Gauge placeholder — swap in your SVG later */}
+            <View style={styles.gaugePlaceholder} />
+
+            <Text style={styles.bigNumber}>{uv}</Text>
+            <Text style={styles.category}>{category}</Text>
+        </View>
+    );
+};
+
+const ExploreScreen: FC = () => {
+    // Replace with live API value later
+    const currentUv = 5;
+
+    return (
+        <View style={styles.container}>
+            <ScrollView
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
+                {/* Orange sun icon at top */}
+                <Ionicons
+                    name="sunny-outline"
+                    size={40}
+                    color="#F5AB3C"
+                    style={styles.topIcon}
+                />
+
+                {/* Current UV reading */}
+                <UvReading uv={currentUv} />
+
+                {/* Placeholder forecast card */}
+                <View style={styles.forecastCard}>
+                    <Text style={styles.cardTitle}>24-hour Forecast</Text>
+                    <View style={styles.forecastPlaceholder} />
+                </View>
+
+                <TouchableOpacity style={styles.addBtn} activeOpacity={0.8}>
+                    <Text style={styles.addTxt}>Enable Notifications</Text>
+                </TouchableOpacity>
+            </ScrollView>
+        </View>
+    );
+};
+
+export default ExploreScreen;
+
+/***************
+ * STYLESHEET *
+ **************/
+const { width } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#FFFCF6',
+    },
+    scrollContent: {
+        paddingTop: 24,
+        paddingHorizontal: 18,
+        paddingBottom: 120,
+    },
+    topIcon: {
+        alignSelf: 'center',
+        marginBottom: 18,
+    },
+    readingContainer: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
+        paddingVertical: 26,
+        paddingHorizontal: 18,
+        alignItems: 'center',
+        marginBottom: 18,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 2,
+    },
+    gaugePlaceholder: {
+        width: 180,
+        height: 90,
+        borderRadius: 14,
+        backgroundColor: '#EDEDED',
+        marginBottom: 16,
+    },
+    bigNumber: {
+        fontSize: 72,
+        fontWeight: '700',
+        lineHeight: 72,
+    },
+    category: {
+        fontSize: 22,
+        fontWeight: '600',
+        marginTop: 4,
+    },
+    forecastCard: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
+        padding: 18,
+        marginBottom: 18,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 2,
+    },
+    cardTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        marginBottom: 12,
+    },
+    forecastPlaceholder: {
+        width: '100%',
+        height: 120,
+        borderRadius: 12,
+        backgroundColor: '#F1F1F1',
+    },
+    addBtn: {
+        alignSelf: 'center',
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: '#F0F0F0',
+        paddingVertical: 14,
+        paddingHorizontal: 28,
+        backgroundColor: '#FFFFFF',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.03,
+        shadowRadius: 2,
+        elevation: 1,
+    },
+    addTxt: {
+        fontSize: 18,
+        fontWeight: '600',
+    },
 });
