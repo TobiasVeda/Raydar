@@ -28,8 +28,8 @@ export default function HomeScreen() {
             }
 
             // await signUserOut();
-            // await signIn("tobiasveda@gmail.com", "Password1.");
-            // await setUserdata(temp);
+            await signIn("tobiasveda@gmail.com", "Password1.");
+            await setUserdata(temp);
             // getUserdata();
             // getUvForecast(60.1, 9.58);
         };

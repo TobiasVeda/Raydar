@@ -17,7 +17,9 @@ export const setUserdata = async (newUser:UserDocument)=>{
         console.log(user);
 
         const docRef = await setDoc(doc(db, "user", user!.uid), { // throw id user=null
-            newUser
+            username: newUser.username,
+            favouriteLocations: newUser.favouriteLocations,
+            notificationsEnabled: newUser.notificationsEnabled
         });
         console.log("Document written");
         return true;
