@@ -17,23 +17,23 @@ interface prop{
 
 export const FavouriteLocation = ({ location, uv }:prop)=>{
 
-    let image = "../assets/images/icon.png";
+    let image = "../assets/images/";
     let category = "";
     if(uv <= 2){
         category = "Low";
-        image += "low.svg";
+        image += "low.png";
     } else if(uv <= 5){
         category = "Moderate";
-        image += "moderate.svg";
+        image += "moderate.png";
     } else if(uv <= 7){
         category = "High";
-        image += "high.svg";
+        image += "high.png";
     } else if(uv <= 10){
         category = "Very High";
-        image += "high.svg";
+        image += "high.png";
     } else{
         category = "Extreme";
-        image += "high.svg";
+        image += "high.png";
     }
 
     return(
@@ -41,8 +41,7 @@ export const FavouriteLocation = ({ location, uv }:prop)=>{
             <Text style={styles.cardTitle}>{location}</Text>
 
             <View style={styles.cardBody}>
-                <Image source={require(image)}/>
-                <View style={styles.gaugePlaceholder} />
+                <Image source={require("../assets/images/low.png")} style={styles.gaugeImage}/>
 
                 <View style={styles.valueBlock}>
                     <Text style={styles.uvNumber}>{uv}</Text>
@@ -157,5 +156,11 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderTopWidth: 1,
         borderTopColor: '#F1F1F1',
+    },
+    gaugeImage: {
+        width: 120,
+        height: 60,
+        resizeMode: 'contain',
+        borderRadius: 10,
     },
 });

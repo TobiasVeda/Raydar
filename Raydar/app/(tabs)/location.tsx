@@ -8,41 +8,12 @@ import {
     Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import {FavouriteLocation} from "@/components/FavouriteLocation";
 
 /***********************************
  * LOCATION SCREEN – icon on top   *
  ***********************************/
 
-interface LocationCardProps {
-    name: string;
-    uv: number; // 0 – 11+
-}
-
-const LocationCard: FC<LocationCardProps> = ({ name, uv }) => {
-    const category = useMemo(() => {
-        if (uv <= 2) return 'Low';
-        if (uv <= 5) return 'Moderate';
-        if (uv <= 7) return 'High';
-        if (uv <= 10) return 'Very High';
-        return 'Extreme';
-    }, [uv]);
-
-    return (
-        <View style={styles.card}>
-            <Text style={styles.cardTitle}>{name}</Text>
-
-            <View style={styles.cardBody}>
-                {/* --- Gauge placeholder – swap with your SVG later --- */}
-                <View style={styles.gaugePlaceholder} />
-
-                <View style={styles.valueBlock}>
-                    <Text style={styles.uvNumber}>{uv}</Text>
-                    <Text style={styles.uvLabel}>{category}</Text>
-                </View>
-            </View>
-        </View>
-    );
-};
 
 const LocationScreen: FC = () => {
     // Dummy data – replace with live values
@@ -65,8 +36,8 @@ const LocationScreen: FC = () => {
                     style={styles.topIcon}
                 />
 
-                {locations.map((l) => (
-                    <LocationCard key={l.name} name={l.name} uv={l.uv} />
+                {locations.map((l, index) => (
+                    <FavouriteLocation key={index} location={l.name} uv={l.uv}/>
                 ))}
 
                 <TouchableOpacity style={styles.addBtn} activeOpacity={0.8}>

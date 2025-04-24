@@ -13,13 +13,13 @@ export const signUp = async (email:string, password:string) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        console.log("W");
-        console.log(user);
+        // console.log("W");
+        // console.log(user);
         return true;
     } catch (e) {
         // const errorCode = e.code;
         // const errorMessage = e.message;
-        console.log("L");
+        console.log("Error signing up:");
         console.log(e);
         return false;
     }
@@ -32,13 +32,13 @@ export const signIn = async (email:string, password:string) => {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        console.log("W");
-        console.log(user);
+        // console.log("W");
+        // console.log(user);
         return true;
     } catch (e) {
         // const errorCode = e.code;
         // const errorMessage = e.message;
-        console.log("L");
+        console.log("Error signing in:");
         console.log(e);
         return false;
     }
@@ -49,10 +49,10 @@ export const signUserOut = async () => {
 
     try {
         const userCredential = await signOut(auth)
-        console.log("Signed out");
+        // console.log("Signed out");
         return true;
     } catch (e) {
-        console.log("L");
+        console.log("Error signing out:");
         console.log(e);
         return false;
     }

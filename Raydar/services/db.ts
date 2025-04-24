@@ -14,14 +14,13 @@ export const setUserdata = async (newUser:UserDocument)=>{
     try {
         const auth = getAuth();
         const user = auth.currentUser;
-        console.log(user);
 
         const docRef = await setDoc(doc(db, "user", user!.uid), { // throw id user=null
             username: newUser.username,
             favouriteLocations: newUser.favouriteLocations,
             notificationsEnabled: newUser.notificationsEnabled
         });
-        console.log("Document written");
+        // console.log("Document written");
         return true;
 
     } catch (e) {
