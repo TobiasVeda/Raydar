@@ -1,5 +1,5 @@
 
-interface UvStrength {
+export interface UvStrength {
     timestamp:string,
     strength:number;
 }
@@ -29,5 +29,3 @@ export const getUvForecast = async (lat:number, lon:number) => {
 
     return trimmedData;
 }
-
-export {UvStrength}
