@@ -12,8 +12,6 @@ import {GeoPoint} from "firebase/firestore";
 import {UserSignOut} from "@/components/auth/UserSignOut";
 import {UserSignIn} from "@/components/auth/UserSignIn";
 import {UserSignUp} from "@/components/auth/UserSignUp";
-import {getCoordinatesFromName, getNameFromCoordinate} from "@/services/geocode";
-import {FavouriteLocation} from "@/components/FavouriteLocation";
 
 
 export default function HomeScreen() {
@@ -28,19 +26,12 @@ export default function HomeScreen() {
                 ],
                 notificationsEnabled: false
             }
-            console.log("a");
+
             // await signUserOut();
-            // await signIn("tobiasveda@gmail.com", "Password1.");
-            // await setUserdata(temp);
+            await signIn("tobiasveda@gmail.com", "Password1.");
+            await setUserdata(temp);
             // getUserdata();
             // getUvForecast(60.1, 9.58);
-            // console.log(await getUvForecast(58.34214, 8.594457));
-            // let a = await getCoordinatesFromName("kristiansand");
-            // let b = await getUvForecast(a[0].lat, a[0].lon);
-            // console.log(b);
-            // let c = await getNameFromCoordinate(a[0].lat, a[0].lon);
-            // console.log(c);
-            // getNameFromCoordinate(58.1, 6.1);
         };
         run();
     }, []);
@@ -89,7 +80,6 @@ export default function HomeScreen() {
           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
         </ThemedText>
       </ThemedView>
-        <FavouriteLocation location={"ABC"} uv={3}/>
         <UserSignUp/>
         <UserSignIn/>
         <UserSignOut/>
