@@ -1,5 +1,5 @@
 
-export interface UvStrength {
+interface UvStrength {
     timestamp:string,
     strength:number;
 }
@@ -29,3 +29,25 @@ export const getUvForecast = async (lat:number, lon:number) => {
 
     return trimmedData;
 }
+
+
+export const getForecastAtTime = async (trimmedData:UvStrength[], time:string): Promise<UvStrength | null> => {
+    if (trimmedData.length === 0) return null;
+
+    const targetTime = new Date(time).getTime();
+
+    let closest = trimmedData[0];
+    let minDiff = Math.abs(new Date(closest.timestamp).getTime() - targetTime);
+
+    for (const item of trimmedData) {
+        const itemTime = new Date(item.timestamp).getTime();
+        const diff = Math.abs(itemTime - targetTime);
+
+        if (diff < minDiff) {
+            closest = item;
+            minDiff = diff;
+        }
+    }
+    return closest;
+}
+
