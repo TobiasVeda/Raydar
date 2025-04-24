@@ -12,6 +12,7 @@ import {GeoPoint} from "firebase/firestore";
 import {UserSignOut} from "@/components/auth/UserSignOut";
 import {UserSignIn} from "@/components/auth/UserSignIn";
 import {UserSignUp} from "@/components/auth/UserSignUp";
+import {FavouriteLocation} from "@/components/FavouriteLocation";
 
 
 export default function HomeScreen() {
@@ -80,6 +81,7 @@ export default function HomeScreen() {
           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
         </ThemedText>
       </ThemedView>
+        <FavouriteLocation location={"Grimstad"} uv={69}/>
         <UserSignUp/>
         <UserSignIn/>
         <UserSignOut/>

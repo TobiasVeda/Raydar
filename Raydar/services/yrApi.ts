@@ -1,5 +1,5 @@
 
-interface UvStrength {
+export interface UvStrength {
     timestamp:string,
     strength:number;
 }
