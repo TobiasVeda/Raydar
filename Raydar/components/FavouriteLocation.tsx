@@ -5,6 +5,7 @@ import {
     StyleSheet,
     TouchableOpacity,
     Dimensions,
+    Image
 } from 'react-native';
 import {useState} from "react";
 
@@ -16,18 +17,23 @@ interface prop{
 
 export const FavouriteLocation = ({ location, uv }:prop)=>{
 
-
+    let image = "../assets/images/icon.png";
     let category = "";
     if(uv <= 2){
         category = "Low";
+        image += "low.svg";
     } else if(uv <= 5){
         category = "Moderate";
+        image += "moderate.svg";
     } else if(uv <= 7){
         category = "High";
+        image += "high.svg";
     } else if(uv <= 10){
         category = "Very High";
+        image += "high.svg";
     } else{
         category = "Extreme";
+        image += "high.svg";
     }
 
     return(
@@ -35,7 +41,7 @@ export const FavouriteLocation = ({ location, uv }:prop)=>{
             <Text style={styles.cardTitle}>{location}</Text>
 
             <View style={styles.cardBody}>
-                {/* --- Gauge placeholder – swap with your SVG later --- */}
+                <Image source={require(image)}/>
                 <View style={styles.gaugePlaceholder} />
 
                 <View style={styles.valueBlock}>
