@@ -4,7 +4,7 @@ import { GeoPoint } from "firebase/firestore";
 import {getAuth} from "firebase/auth";
 
 
-interface UserDocument{
+export interface UserDocument{
     username: string,
     favouriteLocations: GeoPoint[],
     notificationsEnabled: boolean
@@ -45,5 +45,3 @@ export const getUserdata = async ()=>{
     });
     return temp;
 }
-
-export { UserDocument }
