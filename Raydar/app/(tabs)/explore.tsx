@@ -8,34 +8,14 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import {Forecast12h} from "@/components/Forecast12h";
+import {MainUvForecast} from "@/components/MainUvForecast";
 
 /********************************
  * EXPLORE SCREEN (UV Dashboard) *
  ********************************/
 
-interface UvReadingProps {
-    uv: number;
-}
 
-const UvReading: FC<UvReadingProps> = ({ uv }) => {
-    const category = useMemo(() => {
-        if (uv <= 2) return 'Low';
-        if (uv <= 5) return 'Moderate';
-        if (uv <= 7) return 'High';
-        if (uv <= 10) return 'Very High';
-        return 'Extreme';
-    }, [uv]);
-
-    return (
-        <View style={styles.readingContainer}>
-            {/* Gauge placeholder — swap in your SVG later */}
-            <View style={styles.gaugePlaceholder} />
-
-            <Text style={styles.bigNumber}>{uv}</Text>
-            <Text style={styles.category}>{category}</Text>
-        </View>
-    );
-};
 
 const ExploreScreen: FC = () => {
     // Replace with live API value later
@@ -55,14 +35,9 @@ const ExploreScreen: FC = () => {
                     style={styles.topIcon}
                 />
 
-                {/* Current UV reading */}
-                <UvReading uv={currentUv} />
+                <MainUvForecast location={"Not Used Yet"} uv={6}/>
 
-                {/* Placeholder forecast card */}
-                <View style={styles.forecastCard}>
-                    <Text style={styles.cardTitle}>24-hour Forecast</Text>
-                    <View style={styles.forecastPlaceholder} />
-                </View>
+                <Forecast12h/>
 
                 <TouchableOpacity style={styles.addBtn} activeOpacity={0.8}>
                     <Text style={styles.addTxt}>Enable Notifications</Text>
