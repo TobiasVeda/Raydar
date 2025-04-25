@@ -18,7 +18,7 @@ import {FavouriteLocation} from "@/components/FavouriteLocation";
 const LocationScreen: FC = () => {
     // Dummy data – replace with live values
     const locations = [
-        { name: 'My Location', uv: 2 },
+        { name: 'My Location', uv: 4 },
         { name: 'LA', uv: 5 },
     ];
 
