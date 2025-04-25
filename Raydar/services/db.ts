@@ -1,11 +1,12 @@
 import {db} from "@/firebaseConfig";
-import {collection, addDoc, getDocs, setDoc, doc} from "firebase/firestore";
+import {collection, getDocs, setDoc, doc} from "firebase/firestore";
 import { GeoPoint } from "firebase/firestore";
 import {getAuth} from "firebase/auth";
 
 
 export interface UserDocument{
     username: string,
+    currentLocation: GeoPoint,
     favouriteLocations: GeoPoint[],
     notificationsEnabled: boolean
 }
@@ -15,8 +16,9 @@ export const setUserdata = async (newUser:UserDocument)=>{
         const auth = getAuth();
         const user = auth.currentUser;
 
-        const docRef = await setDoc(doc(db, "user", user!.uid), { // throw id user=null
+        const docRef = await setDoc(doc(db, "user", user!.uid), { // throw if user=null
             username: newUser.username,
+            currentLocation: newUser.currentLocation,
             favouriteLocations: newUser.favouriteLocations,
             notificationsEnabled: newUser.notificationsEnabled
         });
@@ -38,9 +40,10 @@ export const getUserdata = async ()=>{
     querySnapshot.forEach((doc) => {
         temp.push({
             username: doc.data().username,
+            currentLocation: doc.data().currentLocations,
             favouriteLocations: doc.data().favouriteLocations,
             notificationsEnabled: doc.data().notificationsEnabled
         });
     });
-    return temp;
+    return temp[0];
 }

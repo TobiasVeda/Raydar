@@ -1,3 +1,4 @@
+import {geocodeApiKey} from "@/DO_NOT_PUSH";
 
 export interface LocationCoordinate{
     name: string,
@@ -5,13 +6,12 @@ export interface LocationCoordinate{
     lat: number,
     lon: number
 }
-let apiKey = "680a383c75bee709254242fjc181721"
 
 export const getNameFromCoordinate = async (lat:number, lon:number)=>{
     let URL1 = "https://geocode.maps.co/reverse?lat="
     let URL2 = "&lon=";
     let URL3 = "&api_key="
-    let URL = URL1 + lat.toString() + URL2 + lon.toString() + URL3 + apiKey;
+    let URL = URL1 + lat.toString() + URL2 + lon.toString() + URL3 + geocodeApiKey;
 
     let response = await fetch(URL);
     let data = await response.json();
@@ -27,7 +27,7 @@ export const getCoordinatesFromName = async (name:string)=>{
 
     let URL1 = "https://geocode.maps.co/search?q="
     let URL2 = "&api_key=";
-    let URL = URL1 + name + URL2 + apiKey;
+    let URL = URL1 + name + URL2 + geocodeApiKey;
 
     let response = await fetch(URL);
     let data = await response.json();

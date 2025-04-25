@@ -1,21 +1,14 @@
-import {
-    View,
-    Text,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    Dimensions,
-    Image
-} from 'react-native';
-import {useEffect, useState} from "react";
+import React, {FC, useEffect, useMemo, useState} from "react";
+import {Image, StyleSheet, Text, View} from "react-native";
+
 
 interface prop{
     location: string,
     uv: number
 }
 
+export const MainUvForecast = ({ location, uv }:prop) => {
 
-export const FavouriteLocation = ({ location, uv }:prop)=>{
     const [name, setName] = useState('');
     const [strength, setStrength] = useState(0);
     const [category, setCategory] = useState('');
@@ -45,29 +38,22 @@ export const FavouriteLocation = ({ location, uv }:prop)=>{
     }, [location, uv]);
 
 
-
-    return(
-        <View style={styles.card}>
-            <Text style={styles.cardTitle}>{name}</Text>
-
-            <View style={styles.cardBody}>
-                <Image source={image} style={styles.gaugeImage}/>
-
-                <View style={styles.valueBlock}>
-                    <Text style={styles.uvNumber}>{strength}</Text>
-                    <Text style={styles.uvLabel}>{category}</Text>
-                </View>
-            </View>
+    return (
+        <View style={styles.readingContainer}>
+            <Image source={image} style={styles.gaugeImage}/>
+            <Text style={styles.bigNumber}>{strength}</Text>
+            <Text style={styles.category}>{category}</Text>
         </View>
-    )
-}
-
+    );
+};
 
 const styles = StyleSheet.create({
-    card: {
+    readingContainer: {
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
-        padding: 18,
+        paddingVertical: 26,
+        paddingHorizontal: 18,
+        alignItems: 'center',
         marginBottom: 18,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -75,34 +61,20 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 2,
     },
-    cardTitle: {
-        fontSize: 20,
-        fontWeight: '700',
-        marginBottom: 4,
-    },
-    cardBody: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingTop: 8,
-    },
-    valueBlock: {
-        alignItems: 'center',
-        paddingHorizontal: 8,
-    },
-    uvNumber: {
-        fontSize: 56,
-        fontWeight: '700',
-        lineHeight: 56,
-    },
-    uvLabel: {
-        fontSize: 20,
-        fontWeight: '600',
-    },
     gaugeImage: {
         width: 120,
         height: 60,
         resizeMode: 'contain',
         borderRadius: 10,
+    },
+    bigNumber: {
+        fontSize: 72,
+        fontWeight: '700',
+        lineHeight: 72,
+    },
+    category: {
+        fontSize: 22,
+        fontWeight: '600',
+        marginTop: 4,
     },
 });

@@ -18,23 +18,23 @@ import {FavouriteLocation} from "@/components/FavouriteLocation";
 export default function HomeScreen() {
 
     useEffect(() => {
-        const run = async () => {
-            let temp:UserDocument = {
-                username: "b",
-                favouriteLocations: [
-                    new GeoPoint(59.9139, 10.7522),
-                    new GeoPoint(10, 33)
-                ],
-                notificationsEnabled: false
-            }
+        const testFunction = async () => {
+        let temp:UserDocument = {
+            username: "name",
+            currentLocation: new GeoPoint(2,3),
+            favouriteLocations: [
+                new GeoPoint(2,3)
+            ],
+            notificationsEnabled: false
+        }
+        // setUserdata(temp);
 
-            // await signUserOut();
-            await signIn("tobiasveda@gmail.com", "Password1.");
-            await setUserdata(temp);
-            // getUserdata();
-            // getUvForecast(60.1, 9.58);
+
+
+
+
         };
-        run();
+        testFunction();
     }, []);
 
   return (
@@ -81,10 +81,11 @@ export default function HomeScreen() {
           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
         </ThemedText>
       </ThemedView>
-        <FavouriteLocation location={"Grimstad"} uv={69}/>
+
         <UserSignUp/>
         <UserSignIn/>
         <UserSignOut/>
+
     </ParallaxScrollView>
   );
 }
