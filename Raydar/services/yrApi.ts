@@ -30,22 +30,31 @@ export const getUvForecast = async (lat:number, lon:number) => {
     return trimmedData;
 }
 
+export const get12HourForecast = (trimmedData:UvStrength[]) => {
+    const now = new Date(trimmedData[2].timestamp);
+    const twelveHoursLater = new Date(Math.round(now.getTime()) + 12 * 60 * 60 * 1000); // 12 hours in ms
+    const index = trimmedData.findIndex(item => new Date(item.timestamp) > twelveHoursLater);
 
-export const getForecastAtTime = async (trimmedData:UvStrength[], time:string): Promise<UvStrength | null> => {
+    if (index === -1) {
+        // If no item is later than 12 hours, return the whole array
+        return [...trimmedData];
+    }
+
+    // Splice up to the found index (do not include anything after 12 hours)
+    return trimmedData.slice(0, index);
+
+}
+
+export const getForecastAtTime = async (trimmedData:UvStrength[], targetTime:number): Promise<UvStrength | null> => {
     if (trimmedData.length === 0) return null;
 
-    const targetTime = new Date(time).getTime();
-
     let closest = trimmedData[0];
-    let minDiff = Math.abs(new Date(closest.timestamp).getTime() - targetTime);
+    let itemTime;
 
-    for (const item of trimmedData) {
-        const itemTime = new Date(item.timestamp).getTime();
-        const diff = Math.abs(itemTime - targetTime);
-
-        if (diff < minDiff) {
-            closest = item;
-            minDiff = diff;
+    for (let i = 0; i < trimmedData.length; i++) {
+        itemTime = new Date(trimmedData[i].timestamp).getUTCHours();
+        if (itemTime == targetTime) {
+            closest = trimmedData[i];
         }
     }
     return closest;
