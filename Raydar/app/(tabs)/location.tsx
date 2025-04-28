@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useState, useRef } from 'react';
 import {
     View,
     Text,
@@ -8,19 +8,27 @@ import {
     Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import {FavouriteLocation} from "@/components/FavouriteLocation";
+import { Swipeable } from 'react-native-gesture-handler';
+import { FavouriteLocation } from '@/components/FavouriteLocation';
 
-/***********************************
- * LOCATION SCREEN – icon on top   *
- ***********************************/
+const { width } = Dimensions.get('window');
+const CARD_WIDTH = width - 36;
 
+interface Location { name: string; uv: number; }
 
 const LocationScreen: FC = () => {
-    // Dummy data – replace with live values
-    const locations = [
-        { name: 'My Location', uv: 4 },
-        { name: 'LA', uv: 5 },
-    ];
+    const [locations, setLocations] = useState<Location[]>([
+        { name: 'Grimstad Agder', uv: 3 },
+        { name: 'Kristiansand',   uv: 2 },
+        { name: 'Tanzania',       uv: 10 },
+        { name: 'Florida',        uv: 6 },
+    ]);
+    const swipeableRefs = useRef<Swipeable[]>([]);
+
+    const handleDelete = (i: number) => {
+        swipeableRefs.current[i]?.close();
+        setLocations(l => l.filter((_, idx) => idx !== i));
+    };
 
     return (
         <View style={styles.container}>
@@ -28,16 +36,45 @@ const LocationScreen: FC = () => {
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
-                {/* Top location icon – matches nav bar glyph */}
                 <Ionicons
                     name="location-outline"
                     size={40}
-                    color="#34C759" /* same green as active location tab */
+                    color="#34C759"
                     style={styles.topIcon}
                 />
 
-                {locations.map((l, index) => (
-                    <FavouriteLocation key={index} location={l.name} uv={l.uv}/>
+                {locations.map((loc, idx) => (
+                    <Swipeable
+                        key={loc.name}
+                        ref={ref => { if (ref) swipeableRefs.current[idx] = ref; }}
+                        overshootRight={false}
+                        // keep the card rounded while swiping
+                        containerStyle={styles.swipeContainer}
+                        childrenContainerStyle={styles.swipeChildren}
+
+                        renderRightActions={() => (
+                            <View style={styles.deleteContainer}>
+                                {/*
+                  This 200px-wide red view is INSIDE the 100px container
+                  and thus clipped—only 100px shows when swiped.
+                */}
+                                <View style={styles.fullBgInAction} />
+
+                                <TouchableOpacity
+                                    style={styles.deleteBtn}
+                                    onPress={() => handleDelete(idx)}
+                                >
+                                    <Text style={styles.deleteText}>Delete</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    >
+                        <FavouriteLocation
+                            location={loc.name}
+                            uv={loc.uv}
+                            onPressDots={() => swipeableRefs.current[idx]?.openRight()}
+                        />
+                    </Swipeable>
                 ))}
 
                 <TouchableOpacity style={styles.addBtn} activeOpacity={0.8}>
@@ -50,79 +87,72 @@ const LocationScreen: FC = () => {
 
 export default LocationScreen;
 
-/***************
- * STYLESHEET *
- **************/
-const { width } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFFCF6', // very light beige
+        backgroundColor: '#fff8eb',
     },
     scrollContent: {
         paddingTop: 24,
         paddingHorizontal: 18,
-        paddingBottom: 120, // room for nav bar
+        paddingBottom: 120,
     },
-    /* --- top icon --- */
     topIcon: {
         alignSelf: 'center',
         marginBottom: 18,
     },
-    /* --- placeholders --- */
-    gaugePlaceholder: {
-        width: 120,
-        height: 60,
-        borderRadius: 10,
-        backgroundColor: '#EDEDED',
+
+    // — keep your front card rounded —
+    swipeContainer: {
+        marginBottom: 18,   // same as FavouriteLocation’s marginBottom
+        borderRadius: 20,   // match the card radius
+        overflow: 'visible',// allow its corners to stay rounded when sliding
     },
-    /* --- cards --- */
-    card: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: 20,
-        padding: 18,
-        marginBottom: 18,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-        elevation: 2,
+    swipeChildren: {
+        borderRadius: 20,   // round the inner view
+        overflow: 'hidden', // clip the card content to that radius
     },
-    cardTitle: {
-        fontSize: 20,
-        fontWeight: '700',
-        marginBottom: 4,
+
+    // — the swipe action itself —
+    deleteContainer: {
+        width: 100,              // how far you can swipe
+        marginBottom: 18,        // match card spacing
+        borderTopRightRadius: 20,
+        borderBottomRightRadius: 20,
+        overflow: 'hidden',      // clip the 200px bg down to 100px
+        position: 'relative',    // so our fullBgInAction absolute positions
     },
-    cardBody: {
-        flexDirection: 'row',
+    fullBgInAction: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        width: 200,              // your “pretty” width
+        backgroundColor: '#FF3B30',
+        borderTopRightRadius: 20,
+        borderBottomRightRadius: 20,
+    },
+    deleteBtn: {
+        flex: 1,
+        justifyContent: 'center',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingTop: 8,
     },
-    valueBlock: {
-        alignItems: 'center',
-        paddingHorizontal: 8,
-    },
-    uvNumber: {
-        fontSize: 56,
-        fontWeight: '700',
-        lineHeight: 56,
-    },
-    uvLabel: {
-        fontSize: 20,
+    deleteText: {
+        color: '#fff',
         fontWeight: '600',
+        textAlign: 'center',
     },
-    /* --- + Add New --- */
+
+    // — add button at bottom —
     addBtn: {
         alignSelf: 'center',
         borderRadius: 14,
         borderWidth: 1,
-        borderColor: '#F0F0F0',
+        borderColor: '#34C759',
+        backgroundColor: '#34C759',
         paddingVertical: 14,
         paddingHorizontal: 40,
         marginTop: 6,
-        backgroundColor: '#FFFFFF',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.03,
@@ -132,5 +162,6 @@ const styles = StyleSheet.create({
     addTxt: {
         fontSize: 20,
         fontWeight: '600',
+        color: '#fff',
     },
 });
