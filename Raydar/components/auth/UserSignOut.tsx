@@ -1,4 +1,5 @@
 import {signUserOut} from "@/services/auth";
+import {Button} from "react-native";
 
 export const UserSignOut = ()=>{
 
@@ -13,6 +14,9 @@ export const UserSignOut = ()=>{
     }
 
     return(
-        <button onClick={buttonPressed} style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}>Sign Out</button>
+        <Button
+            title="Sign Out"
+            onPress={buttonPressed}
+        />
     )
 }

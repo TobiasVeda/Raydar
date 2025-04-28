@@ -13,6 +13,7 @@ import {UserSignOut} from "@/components/auth/UserSignOut";
 import {UserSignIn} from "@/components/auth/UserSignIn";
 import {UserSignUp} from "@/components/auth/UserSignUp";
 import {FavouriteLocation} from "@/components/FavouriteLocation";
+import {requestNotificationPermission, testMessage} from "@/services/messaging";
 
 
 export default function HomeScreen() {
@@ -28,8 +29,8 @@ export default function HomeScreen() {
             notificationsEnabled: false
         }
         // setUserdata(temp);
-
-
+        // await requestNotificationPermission();
+        // await testMessage();
 
 
 
@@ -81,7 +82,7 @@ export default function HomeScreen() {
           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
         </ThemedText>
       </ThemedView>
-
+        <ThemedText type="defaultSemiBold">Currently running on: {Platform.OS}</ThemedText>
         <UserSignUp/>
         <UserSignIn/>
         <UserSignOut/>

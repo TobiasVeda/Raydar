@@ -1,4 +1,4 @@
-import {TextInput} from "react-native";
+import {Button, TextInput, View} from "react-native";
 import {useState} from "react";
 import {signUp} from "@/services/auth";
 
@@ -17,7 +17,7 @@ export const UserSignUp = () => {
     }
 
     return(
-        <div>
+        <View style={{ padding: 20 }}>
             <TextInput
                 placeholder="Email"
                 value={email}
@@ -31,8 +31,10 @@ export const UserSignUp = () => {
                 secureTextEntry
                 style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
             />
-            <br/>
-            <button onClick={buttonPressed} style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}>Sign Up</button>
-        </div>
+            <Button
+                title="Sign Up"
+                onPress={buttonPressed}
+            />
+        </View>
     )
 }
