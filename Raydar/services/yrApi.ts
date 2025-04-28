@@ -30,7 +30,7 @@ export const getUvForecast = async (lat:number, lon:number) => {
     return trimmedData;
 }
 
-export const spliceArray = (trimmedData:UvStrength[]) => {
+export const get12HourForecast = (trimmedData:UvStrength[]) => {
     const now = new Date(trimmedData[2].timestamp);
     const twelveHoursLater = new Date(Math.round(now.getTime()) + 12 * 60 * 60 * 1000); // 12 hours in ms
     const index = trimmedData.findIndex(item => new Date(item.timestamp) > twelveHoursLater);
