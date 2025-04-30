@@ -81,7 +81,7 @@ export default function HomeScreen() {
                     <ThemedText type="defaultSemiBold">app-example</ThemedText>.
                 </ThemedText>
             </ThemedView>
-
+            <ThemedText>Your platform is: {Platform.OS}</ThemedText>
             <UserSignUp/>
             <UserSignIn/>
             <UserSignOut/>
