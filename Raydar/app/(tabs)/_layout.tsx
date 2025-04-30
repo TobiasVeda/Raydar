@@ -11,8 +11,8 @@ import type { BottomTabBarIconProps } from '@react-navigation/bottom-tabs';
  * -----------------------------------
  * File → Route mapping in your (tabs) folder:
  *   • location.tsx  → Locations list (green)
- *   • explore.tsx   → UV dashboard (orange)
- *   • index.tsx     → Settings page (blue)
+ *   • index.tsx     → UV dashboard (orange)
+ *   • settings.tsx  → Settings page (blue)
  */
 export default function TabLayout() {
     const INACTIVE_COLOR = '#444';
@@ -33,7 +33,7 @@ export default function TabLayout() {
                 headerShown: false,
                 tabBarButton: HapticTab,
                 tabBarShowLabel: false,
-                tabBarActiveTintColor: INACTIVE_COLOR, // colours handled manually
+                tabBarActiveTintColor: INACTIVE_COLOR,
                 tabBarInactiveTintColor: INACTIVE_COLOR,
                 safeAreaInsets: { bottom: 0 },
                 tabBarStyle: {
@@ -60,9 +60,9 @@ export default function TabLayout() {
                 }}
             />
 
-            {/* UV – orange */}
+            {/* UV Dashboard – orange */}
             <Tabs.Screen
-                name="explore"
+                name="index"
                 options={{
                     tabBarIcon: renderIcon('sunny-outline', '#F5AB3C'),
                 }}
@@ -70,7 +70,7 @@ export default function TabLayout() {
 
             {/* Settings – blue */}
             <Tabs.Screen
-                name="index"
+                name="settings"
                 options={{
                     tabBarIcon: renderIcon('settings-outline', '#007AFF'),
                 }}
