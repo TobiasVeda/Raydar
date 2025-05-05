@@ -4,7 +4,7 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     onAuthStateChanged,
-    signOut
+    signOut, sendEmailVerification
 } from "firebase/auth";
 
 
@@ -13,6 +13,13 @@ export const signUp = async (email:string, password:string) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
+
+        try {
+            await sendEmailVerification(user);
+        } catch (e) {
+            console.log("Error sending email");
+            console.log(e);
+        }
         // console.log("W");
         // console.log(user);
         return true;
@@ -32,9 +39,10 @@ export const signIn = async (email:string, password:string) => {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
+
+        return true;
         // console.log("W");
         // console.log(user);
-        return true;
     } catch (e) {
         // const errorCode = e.code;
         // const errorMessage = e.message;
