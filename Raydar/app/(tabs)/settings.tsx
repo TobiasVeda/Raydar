@@ -1,110 +1,125 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // Import Ionicons for the settings icon
+import { SafeAreaView } from 'react-native-safe-area-context';  // Import SafeAreaView
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import {getUvForecast, UvStrength} from "@/services/yrApi";
-import {signIn, signUp, signUserOut} from "@/services/auth";
-import {setUserdata, getUserdata, UserDocument} from "@/services/db";
-import {useEffect} from "react";
-import {GeoPoint} from "firebase/firestore";
-import {UserSignOut} from "@/components/auth/UserSignOut";
-import {UserSignIn} from "@/components/auth/UserSignIn";
-import {UserSignUp} from "@/components/auth/UserSignUp";
-import {FavouriteLocation} from "@/components/FavouriteLocation";
+// Import your custom components
+import { UserSignUp } from '@/components/auth/UserSignUp';
+import { UserSignIn } from '@/components/auth/UserSignIn';
 
+// URLs for the links
+const PRIVACY_POLICY_URL = "https://raydar.no/Home/Privacy";
+const TOS_URL = "https://raydar.no/Home/ToS";
+const DATA_RESOURCE_URL = "https://raydar.no/Home/DataResource";
+const YR_URL = "https://yr.no";
 
 export default function HomeScreen() {
+    const [isSignUp, setIsSignUp] = useState(false);
 
-    useEffect(() => {
-        const testFunction = async () => {
-            let temp:UserDocument = {
-                username: "name",
-                currentLocation: new GeoPoint(2,3),
-                favouriteLocations: [
-                    new GeoPoint(2,3)
-                ],
-                notificationsEnabled: false
-            }
-            // setUserdata(temp);
-
-
-
-
-
-        };
-        testFunction();
-    }, []);
+    // Toggle between Sign Up and Log In
+    const toggleSignUpLogin = () => {
+        setIsSignUp((prev) => !prev);
+    };
 
     return (
-        <ParallaxScrollView
-            headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-            headerImage={
-                <Image
-                    source={require('@/assets/images/partial-react-logo.png')}
-                    style={styles.reactLogo}
-                />
-            }>
-            <ThemedView style={styles.titleContainer}>
-                <ThemedText type="title">Welcome!</ThemedText>
-                <HelloWave />
-            </ThemedView>
-            <ThemedView style={styles.stepContainer}>
-                <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-                <ThemedText>
-                    Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-                    Press{' '}
-                    <ThemedText type="defaultSemiBold">
-                        {Platform.select({
-                            ios: 'cmd + d',
-                            android: 'cmd + m',
-                            web: 'F12'
-                        })}
-                    </ThemedText>{' '}
-                    to open developer tools.
-                </ThemedText>
-            </ThemedView>
-            <ThemedView style={styles.stepContainer}>
-                <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-                <ThemedText>
-                    Tap the Explore tab to learn more about what's included in this starter app.
-                </ThemedText>
-            </ThemedView>
-            <ThemedView style={styles.stepContainer}>
-                <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-                <ThemedText>
-                    When you're ready, run{' '}
-                    <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-                    <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-                    <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-                    <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-                </ThemedText>
-            </ThemedView>
-            <ThemedText>Your platform is: {Platform.OS}</ThemedText>
-            <UserSignUp/>
-            <UserSignIn/>
-            <UserSignOut/>
+        <SafeAreaView style={styles.container}>
+            {/* Settings Gear Icon at the top */}
+            <Ionicons name="settings-outline" size={40} color="#007BFF" style={styles.topIcon} />
 
-        </ParallaxScrollView>
+            <View style={styles.menuContainer}>
+                {/* Menu Items */}
+                <TouchableOpacity style={styles.menuItem} onPress={() => Linking.openURL(TOS_URL)}>
+                    <Text style={styles.menuText}>Terms of Service</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.menuItem} onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>
+                    <Text style={styles.menuText}>Privacy Policy</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.menuItem} onPress={() => Linking.openURL(DATA_RESOURCE_URL)}>
+                    <Text style={styles.menuText}>Learn More</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.menuItem} onPress={() => Linking.openURL(YR_URL)}>
+                    <Text style={styles.menuText}>YR Weather</Text>
+                </TouchableOpacity>
+
+                {/* White Container for Sign Up / Log In */}
+                <View style={styles.formContainer}>
+                    {/* Conditionally Render SignUp or SignIn */}
+                    {isSignUp ? (
+                        <UserSignUp />
+                    ) : (
+                        <UserSignIn />
+                    )}
+
+                    {/* Toggle between Sign Up and Log In */}
+                    <TouchableOpacity onPress={toggleSignUpLogin} style={styles.switchTextContainer}>
+                        <Text style={styles.switchText}>
+                            {isSignUp ? 'Already have an account? Log In' : 'Don’t have an account? Sign Up'}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+
+            </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    titleContainer: {
-        flexDirection: 'row',
+    container: {
+        flex: 1,
+        backgroundColor: '#fff8eb',
+        padding: 20,
+    },
+    title: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginVertical: 20,
+        color: '#333',
+    },
+    menuContainer: {
+        marginTop: 20,
+    },
+    menuItem: {
+        padding: 15,
+        backgroundColor: 'white',
+        marginBottom: 15,
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 3,
+    },
+    menuText: {
+        fontSize: 18,
+        color: 'black',
+    },
+    switchTextContainer: {
+        marginTop: 15,
         alignItems: 'center',
-        gap: 8,
     },
-    stepContainer: {
-        gap: 8,
-        marginBottom: 8,
+    switchText: {
+        color: 'blue',
+        textDecorationLine: 'underline',
     },
-    reactLogo: {
-        height: 178,
-        width: 290,
-        bottom: 0,
-        left: 0,
-        position: 'absolute',
+    topIcon: {
+        alignSelf: 'center',
+        marginTop: 20,
+        marginBottom: 20,
+    },
+    formContainer: {
+        padding: 15,
+        backgroundColor: 'white', // White background for the login/sign-up form
+        marginBottom: 15,
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 3,
     },
 });
