@@ -2,17 +2,17 @@ import React, { FC } from 'react';
 import {
     View,
     Text,
-    StyleSheet,
     ScrollView,
-    Dimensions,
+    StyleSheet,
     TouchableOpacity,
+    Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';  // Import SafeAreaView
 import { MainUvForecast } from '@/components/MainUvForecast';
 
-/********************************
- * EXPLORE SCREEN (UV Dashboard) *
- ********************************/
+const { width } = Dimensions.get('window');
+const CARD_WIDTH = width - 36;
 
 const ExploreScreen: FC = () => {
     // Replace with live API value later
@@ -37,7 +37,7 @@ const ExploreScreen: FC = () => {
     ];
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>  {/* Wrap with SafeAreaView */}
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
@@ -99,21 +99,17 @@ const ExploreScreen: FC = () => {
                     <Text style={styles.addTxt}>Enable Notifications</Text>
                 </TouchableOpacity>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 };
 
 export default ExploreScreen;
 
-/***************
- * STYLESHEET *
- **************/
-const { width } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff8eb',
+        paddingTop: 30, // Optional: Adjust paddingTop for devices with notches
     },
     scrollContent: {
         paddingTop: 24,

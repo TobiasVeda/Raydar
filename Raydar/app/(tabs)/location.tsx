@@ -8,22 +8,21 @@ import {
     Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';  // Import SafeAreaView
 import type { Swipeable as GestureSwipeable } from 'react-native-gesture-handler';
 import { LocationCard, Location } from '@/components/LocationCard';
 
 const { width } = Dimensions.get('window');
-// If you don’t actually use CARD_WIDTH in this file, feel free to remove it.
 const CARD_WIDTH = width - 36;
 
 const LocationScreen: FC = () => {
     const [locations, setLocations] = useState<Location[]>([
         { name: 'Grimstad Agder', uv: 3 },
-        { name: 'Kristiansand',   uv: 2 },
-        { name: 'Tanzania',       uv: 10 },
-        { name: 'Florida',        uv: 6 },
+        { name: 'Kristiansand', uv: 2 },
+        { name: 'Tanzania', uv: 10 },
+        { name: 'Florida', uv: 6 },
     ]);
 
-    // Explicitly allow null while refs haven’t been set
     const swipeableRefs = useRef<Array<GestureSwipeable | null>>([]);
 
     const handleDelete = (i: number) => {
@@ -32,11 +31,12 @@ const LocationScreen: FC = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}> {/* Wrap with SafeAreaView */}
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
+                {/* Location pin icon with adjusted margin */}
                 <Ionicons
                     name="location-outline"
                     size={40}
@@ -58,7 +58,7 @@ const LocationScreen: FC = () => {
                     <Text style={styles.addTxt}>+ Add New</Text>
                 </TouchableOpacity>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -68,15 +68,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff8eb',
+        paddingTop: 10,  // Reduced paddingTop to avoid pushing content too far down
     },
     scrollContent: {
-        paddingTop: 24,
+        paddingTop: 20,  // Reduced top padding inside the scroll
         paddingHorizontal: 18,
         paddingBottom: 120,
     },
     topIcon: {
         alignSelf: 'center',
-        marginBottom: 18,
+        marginTop: 20,  // Adjusted to push the icon slightly lower, but not too much
+        marginBottom: 18,  // Space below the icon
     },
     addBtn: {
         alignSelf: 'center',
