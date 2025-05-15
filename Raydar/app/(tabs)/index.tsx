@@ -37,7 +37,7 @@ const ExploreScreen: FC = () => {
     ];
 
     return (
-        <SafeAreaView style={styles.container}>  {/* Wrap with SafeAreaView */}
+        <View style={styles.container}>  {/* Wrap with SafeAreaView */}
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
@@ -99,7 +99,7 @@ const ExploreScreen: FC = () => {
                     <Text style={styles.addTxt}>Enable Notifications</Text>
                 </TouchableOpacity>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 };
 

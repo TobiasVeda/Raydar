@@ -31,7 +31,7 @@ const LocationScreen: FC = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}> {/* Wrap with SafeAreaView */}
+        <View style={styles.container}> {/* Wrap with SafeAreaView */}
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
@@ -58,7 +58,7 @@ const LocationScreen: FC = () => {
                     <Text style={styles.addTxt}>+ Add New</Text>
                 </TouchableOpacity>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 };
 
