@@ -2,16 +2,12 @@ import {db} from "@/firebaseConfig";
 import {collection, getDocs, setDoc, doc} from "firebase/firestore";
 import { GeoPoint } from "firebase/firestore";
 import {getAuth} from "firebase/auth";
+import {UserDocument} from "@/services/db/db";
 
 
-export interface UserDocument{
-    username: string,
-    currentLocation: GeoPoint,
-    favouriteLocations: GeoPoint[],
-    notificationsEnabled: boolean
-}
 
-export const setUserdata = async (newUser:UserDocument)=>{
+
+export const setUserdataToFirestore = async (newUser:UserDocument)=>{
     try {
         const auth = getAuth();
         const user = auth.currentUser;
@@ -32,7 +28,7 @@ export const setUserdata = async (newUser:UserDocument)=>{
     }
 }
 
-export const getUserdata = async ()=>{
+export const getUserdataFromFirestore = async ()=>{
     let temp:UserDocument[] = [];
 
     // Should only be able to retrieve collections with matching userId based on rules
