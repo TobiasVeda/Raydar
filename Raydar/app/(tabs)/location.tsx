@@ -8,7 +8,7 @@ import {
     Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';  // Import SafeAreaView
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Swipeable as GestureSwipeable } from 'react-native-gesture-handler';
 import { LocationCard, Location } from '@/components/LocationCard';
 
@@ -24,19 +24,35 @@ const LocationScreen: FC = () => {
     ]);
 
     const swipeableRefs = useRef<Array<GestureSwipeable | null>>([]);
+    const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-    const handleDelete = (i: number) => {
-        swipeableRefs.current[i]?.close();
-        setLocations(l => l.filter((_, idx) => idx !== i));
+    const handlePressDots = (index: number) => {
+        if (openIndex === index) {
+            swipeableRefs.current[index]?.close();
+            setOpenIndex(null);
+        } else {
+            swipeableRefs.current.forEach((ref, i) => {
+                if (ref && i !== index) {
+                    ref.close();
+                }
+            });
+            swipeableRefs.current[index]?.openRight();
+            setOpenIndex(index);
+        }
+    };
+
+    const handleDelete = (index: number) => {
+        swipeableRefs.current[index]?.close();
+        setLocations(prev => prev.filter((_, i) => i !== index));
+        if (openIndex === index) setOpenIndex(null);
     };
 
     return (
-        <View style={styles.container}> {/* Wrap with SafeAreaView */}
+        <View style={styles.container}>
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
-                {/* Location pin icon with adjusted margin */}
                 <Ionicons
                     name="location-outline"
                     size={40}
@@ -50,7 +66,7 @@ const LocationScreen: FC = () => {
                         ref={r => { swipeableRefs.current[idx] = r; }}
                         loc={loc}
                         onDelete={() => handleDelete(idx)}
-                        onPressDots={() => swipeableRefs.current[idx]?.openRight()}
+                        onPressDots={() => handlePressDots(idx)}
                     />
                 ))}
 
@@ -68,17 +84,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff8eb',
-        paddingTop: 10,  // Reduced paddingTop to avoid pushing content too far down
+        paddingTop: 10,
     },
     scrollContent: {
-        paddingTop: 20,  // Reduced top padding inside the scroll
+        paddingTop: 20,
         paddingHorizontal: 18,
         paddingBottom: 120,
     },
     topIcon: {
         alignSelf: 'center',
-        marginTop: 20,  // Adjusted to push the icon slightly lower, but not too much
-        marginBottom: 18,  // Space below the icon
+        marginTop: 20,
+        marginBottom: 18,
     },
     addBtn: {
         alignSelf: 'center',
