@@ -11,21 +11,7 @@ const ExploreScreen: FC = () => {
     const [currentUv, setCurrentUv] = useState(0);
     const [currentTemp, setCurrentTemp] = useState(0);
     const [currentCity, setCurrentCity] = useState("Loading...");
-    const [forecastData, setForecastData] = useState<UvStrength[]>([
-        { timestamp: "2025-05-16T01:00:00Z", strength: 0, temperature: 0 },
-        { timestamp: "2025-05-16T02:00:00Z", strength: 0, temperature: 0 },
-        { timestamp: "2025-05-16T03:00:00Z", strength: 0, temperature: 0 },
-        { timestamp: "2025-05-16T04:00:00Z", strength: 0, temperature: 0 },
-        { timestamp: "2025-05-16T05:00:00Z", strength: 0, temperature: 0 },
-        { timestamp: "2025-05-16T06:00:00Z", strength: 0, temperature: 0 },
-        { timestamp: "2025-05-16T07:00:00Z", strength: 0, temperature: 0 },
-        { timestamp: "2025-05-16T08:00:00Z", strength: 0, temperature: 0 },
-        { timestamp: "2025-05-16T09:00:00Z", strength: 0, temperature: 0 },
-        { timestamp: "2025-05-16T10:00:00Z", strength: 0, temperature: 0 },
-        { timestamp: "2025-05-16T11:00:00Z", strength: 0, temperature: 0 },
-        { timestamp: "2025-06-16T00:00:00Z", strength: 0, temperature: 0 },
-    ]);
-
+    const [forecastData, setForecastData] = useState<UvStrength[]>([]);
     useEffect(() => {
         const updateMain = async ()=>{
             let loc = await getCurrentLocation();
@@ -44,10 +30,8 @@ const ExploreScreen: FC = () => {
         updateMain();
         const interval = setInterval(() => {
             updateMain();
-        },3*1000); // 1 minute
+        },5*60*1000); // 5 minutes
     }, []);
-
-
 
     return (
         <View style={styles.container}>
@@ -87,7 +71,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff8eb',
-        paddingTop: 30, // Adjust paddingTop for devices with notches
+        paddingTop: 5, // Adjust paddingTop for devices with notches
     },
     scrollContent: {
         paddingTop: 24,

@@ -52,7 +52,7 @@ export const MainUvForecast: FC<Props> = ({uv, city, temperature}) => {
             setImage(require("../assets/images/high.png"));
             setCurrentSpf("50+");
         }
-    }, [uv]);
+    }, [uv, city, temperature]);
 
     return (
         <View style={styles.mainCard}>

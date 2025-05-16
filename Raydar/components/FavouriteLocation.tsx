@@ -16,12 +16,7 @@ interface Props {
     style?: ViewStyle;
 }
 
-export const FavouriteLocation: FC<Props> = ({
-                                                 location,
-                                                 uv,
-                                                 onPressDots,
-                                                 style,
-                                             }) => {
+export const FavouriteLocation: FC<Props> = ({location, uv, onPressDots, style, }) => {
     const [strength, setStrength] = useState(0);
     const [category, setCategory] = useState('');
     const [image, setImage] = useState(require('../assets/images/low.png'));

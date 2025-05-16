@@ -1,27 +1,61 @@
-import React, { FC, useState, useRef } from 'react';
+import React, {FC, useState, useRef, useEffect} from 'react';
 import {
     View,
     Text,
     ScrollView,
     StyleSheet,
     TouchableOpacity,
-    Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Swipeable as GestureSwipeable } from 'react-native-gesture-handler';
 import { LocationCard, Location } from '@/components/LocationCard';
+import {getUvForecast} from "@/services/yrApi";
+import {getNameFromCoordinate} from "@/services/geocode";
+import {getUserdata} from "@/services/db/db";
+import {GeoPoint} from "firebase/firestore";
 
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = width - 36;
 
 const LocationScreen: FC = () => {
-    const [locations, setLocations] = useState<Location[]>([
-        { name: 'Grimstad Agder', uv: 3 },
-        { name: 'Kristiansand', uv: 2 },
-        { name: 'Tanzania', uv: 10 },
-        { name: 'Florida', uv: 6 },
-    ]);
+    const [newLocationAdded, setNewLocationAdded] = useState(0);
+    const [coordinates, setCoordinates] = useState<GeoPoint[]>([])
+    const [locations, setLocations] = useState<Location[]>([]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            updateForecast();
+        },5*60*1000); // 5 minutes
+    }, []);
+
+    const updateForecast = async ()=>{
+        if (coordinates.length == 0){
+            return;
+        }
+        let temp:Location[] = [];
+        for (let i = 0; i < coordinates.length; i++) {
+            let name = await getNameFromCoordinate(coordinates[i].latitude, coordinates[i].longitude);
+            let uv = (await getUvForecast(coordinates[i].latitude, coordinates[i].longitude))[0].strength;
+            temp[i] = {name:name, uv:uv};
+        }
+        setLocations(temp);
+    }
+    const pullFromDb = async ()=>{
+        // setCoordinates((await getUserdata()).favouriteLocations);
+        setCoordinates([ // dummy data
+            new GeoPoint(58.3405, 8.59343),
+            new GeoPoint(39.56939, 2.65024)
+        ]);
+    }
+
+    useEffect(() => {
+        updateForecast();
+    }, [coordinates]);
+
+    useEffect(() => {
+        // new favourite location added, immediately pull from db to update
+        // Might just call pullFromDb() in buttonPressed function
+        pullFromDb();
+    }, [newLocationAdded]);
+
 
     const swipeableRefs = useRef<Array<GestureSwipeable | null>>([]);
     const [openIndex, setOpenIndex] = useState<number | null>(null);
