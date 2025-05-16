@@ -41,3 +41,37 @@ export const testMessage = async ()=>{
         });
     }
 }
+
+export const scheduleMorningUpdate = async (uv:number, spf:number, hour:number)=>{
+    if (Platform.OS != "web") {
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: "Today's UV is " + uv,
+                body: "We recommend SPF " + spf,
+                data: {data: 'data', test: {test1: 'more data'}},
+            },
+            trigger: {
+                type: Notifications.SchedulableTriggerInputTypes.DAILY,
+                hour: hour,
+                minute: 0
+            },
+        });
+    }
+}
+
+export const scheduleReapplyReminder = async (minutes:number)=>{
+    if (Platform.OS != "web") {
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: "Reapply sunscreen",
+                body: 'Protection from sunscreen is greatly diminished',
+                data: {data: 'data', test: {test1: 'more data'}},
+            },
+            trigger: {
+                type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+                seconds: (minutes*60),
+                repeats: false,
+            },
+        });
+    }
+}
