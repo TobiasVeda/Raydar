@@ -28,6 +28,31 @@ export const setUserdataToFirestore = async (newUser:UserDocument)=>{
     }
 }
 
+export const testPush = async ()=>{
+    // TESTING ONLY
+    try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        const docRef = await setDoc(doc(db, "user", user!.uid), { // throw if user=null
+            username: "tobias",
+            currentLocation: new GeoPoint(58.3405, 8.59343),
+            favouriteLocations: [
+                new GeoPoint(58.3405, 8.59343),
+                new GeoPoint(58.3405, 8.59343)
+            ],
+            notificationsEnabled: true
+        });
+        // console.log("Document written");
+        return true;
+
+    } catch (e) {
+        console.error("Error adding document: ");
+        console.log(e);
+        return false;
+    }
+}
+
 export const getUserdataFromFirestore = async ()=>{
     let temp:UserDocument[] = [];
 

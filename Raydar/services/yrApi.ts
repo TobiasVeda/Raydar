@@ -2,6 +2,7 @@
 export interface UvStrength {
     timestamp:string,
     strength:number;
+    temperature:number,
 }
 
 
@@ -23,7 +24,8 @@ export const getUvForecast = async (lat:number, lon:number) => {
     for (let i = 0; i < data.properties.timeseries.length; i++) {
         trimmedData.push({
             timestamp: data.properties.timeseries[i].time,
-            strength: data.properties.timeseries[i].data.instant.details.ultraviolet_index_clear_sky
+            strength: data.properties.timeseries[i].data.instant.details.ultraviolet_index_clear_sky,
+            temperature: data.properties.timeseries[i].data.instant.details.air_temperature
         })
     }
 
@@ -31,6 +33,7 @@ export const getUvForecast = async (lat:number, lon:number) => {
 }
 
 export const get12HourForecast = (trimmedData:UvStrength[]) => {
+
     const now = new Date(trimmedData[2].timestamp);
     const twelveHoursLater = new Date(Math.round(now.getTime()) + 12 * 60 * 60 * 1000); // 12 hours in ms
     const index = trimmedData.findIndex(item => new Date(item.timestamp) > twelveHoursLater);
@@ -42,8 +45,17 @@ export const get12HourForecast = (trimmedData:UvStrength[]) => {
 
     // Splice up to the found index (do not include anything after 12 hours)
     return trimmedData.slice(0, index);
-
 }
+
+export const formatTo12Hour = (isoString: string): string => {
+    const date = new Date(isoString);
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        hour12: true,
+        timeZone: timezone,
+    });
+};
 
 export const getForecastAtTime = async (trimmedData:UvStrength[], targetTime:number): Promise<UvStrength | null> => {
     if (trimmedData.length === 0) return null;

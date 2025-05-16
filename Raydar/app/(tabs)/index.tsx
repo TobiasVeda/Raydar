@@ -1,43 +1,40 @@
-import React, { FC } from 'react';
-import {
-    View,
-    Text,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    Dimensions,
-} from 'react-native';
+import React, { FC, useEffect, useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';  // Import SafeAreaView
 import { MainUvForecast } from '@/components/MainUvForecast';
-
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = width - 36;
+import {getCurrentLocation} from "@/services/location";
+import {get12HourForecast, getUvForecast, UvStrength} from "@/services/yrApi";
+import { getNameFromCoordinate} from "@/services/geocode";
+import { Forecast12h} from "@/components/Forecast12h";
 
 const ExploreScreen: FC = () => {
-    // Replace with live API value later
-    const currentUv = 2;
-    const currentTemp = 10; // placeholder temperature
-    const currentSpf = 15;  // placeholder SPF
-
-    // Hardcoded forecast data for horizontal scroll
-    const forecastData = [
-        { time: 'Now', uv: currentUv },
-        { time: '9AM', uv: 3 },
-        { time: '10AM', uv: 4 },
-        { time: '11AM', uv: 5 },
-        { time: '12PM', uv: 6 },
-        { time: '1PM', uv: 7 },
-        { time: '2PM', uv: 8 },
-        { time: '3PM', uv: 7 },
-        { time: '4PM', uv: 6 },
-        { time: '5PM', uv: 4 },
-        { time: '6PM', uv: 3 },
-        { time: '7PM', uv: 2 },
-    ];
+    const [currentUv, setCurrentUv] = useState(0);
+    const [currentTemp, setCurrentTemp] = useState(0);
+    const [currentCity, setCurrentCity] = useState("Loading...");
+    const [forecastData, setForecastData] = useState<UvStrength[]>([]);
+    useEffect(() => {
+        const updateMain = async ()=>{
+            let loc = await getCurrentLocation();
+            if (loc == null){
+                setCurrentCity("Location Permission Denied")
+                return;
+            }
+            let forecast = await getUvForecast(loc!.lat, loc!.lon);
+            let city = await getNameFromCoordinate(loc!.lat, loc!.lon);
+            let longTerm = get12HourForecast(forecast);
+            setCurrentUv(forecast[0].strength);
+            setCurrentTemp(forecast[0].temperature);
+            setCurrentCity(city);
+            setForecastData(longTerm);
+        }
+        updateMain();
+        const interval = setInterval(() => {
+            updateMain();
+        },5*60*1000); // 5 minutes
+    }, []);
 
     return (
-        <View style={styles.container}>  {/* Wrap with SafeAreaView */}
+        <View style={styles.container}>
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
@@ -54,46 +51,11 @@ const ExploreScreen: FC = () => {
                 <Text style={styles.mainHeader}>My location:</Text>
 
                 {/* Main card with location, temp, UV, and SPF */}
-                <View style={styles.mainCard}>
-                    <View style={styles.locationRow}>
-                        <Ionicons
-                            name="location-outline"
-                            size={20}
-                            color="#171717"
-                            style={styles.locationIcon}
-                        />
-                        <Text style={styles.locationText}>Grimstad – Agder</Text>
-                    </View>
-                    <View style={styles.mainCardRow}>
-                        <Text style={styles.tempLarge}>{currentTemp}°</Text>
-                        <View style={styles.uvBlock}>
-                            <MainUvForecast location="" uv={currentUv} />
-                        </View>
-                        <View style={styles.spfBlock}>
-                            <Text style={styles.spfLabel}>SPF</Text>
-                            <View style={styles.spfCircle}>
-                                <Text style={styles.spfNumber}>{currentSpf}</Text>
-                            </View>
-                        </View>
-                    </View>
-                </View>
+                <MainUvForecast uv={currentUv} city={currentCity} temperature={currentTemp}/>
 
                 {/* UV forecast title outside card for more space */}
                 <Text style={styles.forecastTitle}>UV Forecast:</Text>
-                <View style={styles.forecastCard}>
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.scrollContentHorizontal}
-                    >
-                        {forecastData.map((item, index) => (
-                            <View key={index} style={styles.forecastItem}>
-                                <Text style={styles.time}>{item.time}</Text>
-                                <Text style={styles.uv}>{item.uv}</Text>
-                            </View>
-                        ))}
-                    </ScrollView>
-                </View>
+                <Forecast12h forecast={forecastData}/>
 
                 <TouchableOpacity style={styles.addBtn} activeOpacity={0.8}>
                     <Text style={styles.addTxt}>Enable Notifications</Text>
@@ -109,7 +71,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff8eb',
-        paddingTop: 30, // Optional: Adjust paddingTop for devices with notches
+        paddingTop: 5, // Adjust paddingTop for devices with notches
     },
     scrollContent: {
         paddingTop: 24,
@@ -128,73 +90,6 @@ const styles = StyleSheet.create({
         color: '#171717',
         textTransform: 'capitalize',
     },
-
-    mainCard: {
-        width: '100%',             // fill the ScrollView’s inner width
-        backgroundColor: '#FFFFFF',
-        borderRadius: 20,          // match forecastCard corners
-        paddingVertical: 12,       // same vertical padding
-        paddingHorizontal: 8,      // same horizontal padding
-        marginBottom: 18,
-        // same drop-shadow as forecastCard
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-        elevation: 2,
-    },
-
-    locationRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 12,
-    },
-    locationIcon: {
-        marginRight: 6,
-    },
-    locationText: {
-        fontSize: 16,
-        fontWeight: '500',
-        color: '#171717',
-    },
-
-    mainCardRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-    tempLarge: {
-        fontSize: 48,
-        fontWeight: '700',
-        color: '#171717',
-    },
-    uvBlock: {
-        flex: 1,
-        alignItems: 'center',
-    },
-    spfBlock: {
-        alignItems: 'center',
-    },
-    spfLabel: {
-        fontSize: 14,
-        fontWeight: '600',
-        marginBottom: 4,
-        color: '#171717',
-    },
-    spfCircle: {
-        width: 70,
-        height: 70,
-        borderRadius: 35,
-        backgroundColor: '#F5AB3C66',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    spfNumber: {
-        fontSize: 32,
-        fontWeight: '700',
-        color: '#171717',
-    },
-
     forecastTitle: {
         fontSize: 18,
         fontWeight: '700',
@@ -212,28 +107,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.05,
         shadowRadius: 4,
         elevation: 2,
-    },
-    scrollContentHorizontal: {
-        paddingHorizontal: 4,
-    },
-    forecastItem: {
-        alignItems: 'center',
-        marginRight: 16,
-        width: 60,
-    },
-    time: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#888888',
-        marginBottom: 6,
-        textAlign: 'center',
-    },
-    uv: {
-        fontSize: 37,
-        fontWeight: '700',
-        lineHeight: 36,
-        textAlign: 'center',
-        color: '#171717',
     },
 
     /* --- Enable Notifications Button --- */
