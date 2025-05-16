@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, {FC, useCallback, useEffect, useState} from 'react';
 import {
     View,
     Text,
@@ -10,34 +10,63 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';  // Import SafeAreaView
 import { MainUvForecast } from '@/components/MainUvForecast';
+import {useFocusEffect} from "expo-router";
+import {Coordinates, getCurrentLocation} from "@/services/location";
+import {formatTo12Hour, get12HourForecast, getUvForecast, UvStrength} from "@/services/yrApi";
+import {getNameFromCoordinate} from "@/services/geocode";
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width - 36;
 
 const ExploreScreen: FC = () => {
-    // Replace with live API value later
-    const currentUv = 2;
-    const currentTemp = 10; // placeholder temperature
-    const currentSpf = 15;  // placeholder SPF
-
-    // Hardcoded forecast data for horizontal scroll
-    const forecastData = [
-        { time: 'Now', uv: currentUv },
-        { time: '9AM', uv: 3 },
-        { time: '10AM', uv: 4 },
-        { time: '11AM', uv: 5 },
-        { time: '12PM', uv: 6 },
-        { time: '1PM', uv: 7 },
-        { time: '2PM', uv: 8 },
-        { time: '3PM', uv: 7 },
-        { time: '4PM', uv: 6 },
-        { time: '5PM', uv: 4 },
-        { time: '6PM', uv: 3 },
-        { time: '7PM', uv: 2 },
+    const dummyForecastData:UvStrength[] = [
+        { timestamp: "2025-05-16T01:00:00Z", strength: 0, temperature: 0 },
+        { timestamp: "2025-05-16T02:00:00Z", strength: 0, temperature: 0 },
+        { timestamp: "2025-05-16T03:00:00Z", strength: 0, temperature: 0 },
+        { timestamp: "2025-05-16T04:00:00Z", strength: 0, temperature: 0 },
+        { timestamp: "2025-05-16T05:00:00Z", strength: 0, temperature: 0 },
+        { timestamp: "2025-05-16T06:00:00Z", strength: 0, temperature: 0 },
+        { timestamp: "2025-05-16T07:00:00Z", strength: 0, temperature: 0 },
+        { timestamp: "2025-05-16T08:00:00Z", strength: 0, temperature: 0 },
+        { timestamp: "2025-05-16T09:00:00Z", strength: 0, temperature: 0 },
+        { timestamp: "2025-05-16T10:00:00Z", strength: 0, temperature: 0 },
+        { timestamp: "2025-05-16T11:00:00Z", strength: 0, temperature: 0 },
+        { timestamp: "2025-06-16T00:00:00Z", strength: 0, temperature: 0 },
     ];
 
+
+    const [currentUv, setCurrentUv] = useState(0);
+    const [currentTemp, setCurrentTemp] = useState(0);
+    const [currentSpf, setCurrentSpf] = useState(0);
+    const [currentCity, setCurrentCity] = useState("Loading...");
+    const [forecastData, setForecastData] = useState(dummyForecastData);
+
+    useEffect(() => {
+        const updateMain = async ()=>{
+            let loc = await getCurrentLocation();
+            if (loc == null){
+                setCurrentCity("Location Permission Denied")
+                return;
+            }
+            let forecast = await getUvForecast(loc!.lat, loc!.lon);
+            let city = await getNameFromCoordinate(loc!.lat, loc!.lon);
+            let longTerm = get12HourForecast(forecast);
+            setCurrentUv(forecast[0].strength);
+            setCurrentTemp(forecast[0].temperature);
+            // setCurrentSpf()
+            setCurrentCity(city);
+            setForecastData(longTerm);
+        }
+        updateMain();
+        const interval = setInterval(() => {
+            updateMain();
+        },60*1000); // 1 minute
+    }, []);
+
+
+
     return (
-        <View style={styles.container}>  {/* Wrap with SafeAreaView */}
+        <View style={styles.container}>{/* Wrap with SafeAreaView */}
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
@@ -62,7 +91,7 @@ const ExploreScreen: FC = () => {
                             color="#171717"
                             style={styles.locationIcon}
                         />
-                        <Text style={styles.locationText}>Grimstad – Agder</Text>
+                        <Text style={styles.locationText}>{currentCity}</Text>
                     </View>
                     <View style={styles.mainCardRow}>
                         <Text style={styles.tempLarge}>{currentTemp}°</Text>
@@ -88,8 +117,10 @@ const ExploreScreen: FC = () => {
                     >
                         {forecastData.map((item, index) => (
                             <View key={index} style={styles.forecastItem}>
-                                <Text style={styles.time}>{item.time}</Text>
-                                <Text style={styles.uv}>{item.uv}</Text>
+                                <Text style={styles.time}>{formatTo12Hour(item.timestamp)}</Text>
+                                <Text style={styles.uv}>{item.strength}</Text>
+                                {/*Shows temperature, but looks shit*/}
+                                {/*<Text style={styles.uv}>{item.temperature}°</Text>*/}
                             </View>
                         ))}
                     </ScrollView>
