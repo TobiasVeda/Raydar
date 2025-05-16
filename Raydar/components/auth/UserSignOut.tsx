@@ -1,22 +1,38 @@
-import {signUserOut} from "@/services/auth";
-import {Button} from "react-native";
+import React from 'react';
+import { signUserOut } from "@/services/auth";
+import { TouchableOpacity, Text, StyleSheet } from "react-native";
 
-export const UserSignOut = ()=>{
-
-    const buttonPressed = async ()=>{
-        let result = await signUserOut();
-        // Replace alert with something not shit
-        if (result){
+export const UserSignOut = () => {
+    const buttonPressed = async () => {
+        const result = await signUserOut();
+        if (result) {
             alert("User signed out");
-        } else{
+        } else {
             alert("Error, couldn't sign out");
         }
-    }
+    };
 
-    return(
-        <Button
-            title="Sign Out"
-            onPress={buttonPressed}
-        />
-    )
-}
+    return (
+        <TouchableOpacity style={styles.signOutButton} onPress={buttonPressed}>
+            <Text style={styles.signOutText}>Sign Out</Text>
+        </TouchableOpacity>
+    );
+};
+
+const styles = StyleSheet.create({
+    signOutButton: {
+        backgroundColor: '#007BFF',
+        paddingVertical: 14,
+        paddingHorizontal: 20,
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: '#007BFF',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    signOutText: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: 'white',
+    },
+});

@@ -1,14 +1,25 @@
 import { TouchableOpacity, Text, TextInput, View, StyleSheet } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signUp } from "@/services/auth";
 
 export const UserSignUp = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+
+    useEffect(() => {
+        if (confirmPassword && password !== confirmPassword) {
+            setPasswordError("Passwords do not match");
+        } else {
+            setPasswordError('');
+        }
+    }, [password, confirmPassword]);
 
     const buttonPressed = async () => {
-        let result = await signUp(email, password);
-        // Replace alert with something more user-friendly
+        if (passwordError) return;
+
+        const result = await signUp(email, password);
         if (result) {
             alert("User signed up");
         } else {
@@ -23,6 +34,8 @@ export const UserSignUp = () => {
                 value={email}
                 onChangeText={setEmail}
                 style={styles.input}
+                autoCapitalize="none"
+                keyboardType="email-address"
             />
             <TextInput
                 placeholder="Password"
@@ -31,6 +44,16 @@ export const UserSignUp = () => {
                 secureTextEntry
                 style={styles.input}
             />
+            <TextInput
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+                style={styles.input}
+            />
+            {passwordError ? (
+                <Text style={styles.errorText}>{passwordError}</Text>
+            ) : null}
             <TouchableOpacity style={styles.submitButton} onPress={buttonPressed}>
                 <Text style={styles.submitButtonText}>Sign Up</Text>
             </TouchableOpacity>
@@ -38,7 +61,6 @@ export const UserSignUp = () => {
     );
 };
 
-// Styling
 const styles = StyleSheet.create({
     container: {
         padding: 20,
@@ -48,21 +70,26 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 10,
         borderRadius: 5,
-        backgroundColor: 'white', // White background for input fields
-        borderColor: '#ddd', // Border color
+        backgroundColor: 'white',
+        borderColor: '#ddd',
+    },
+    errorText: {
+        color: 'red',
+        marginBottom: 10,
+        marginLeft: 2,
     },
     submitButton: {
-        backgroundColor: '#007BFF', // Blue background
+        backgroundColor: '#007BFF',
         paddingVertical: 14,
         borderRadius: 14,
         borderWidth: 1,
-        borderColor: '#007BFF', // Border color matching the background
+        borderColor: '#007BFF',
         alignItems: 'center',
         justifyContent: 'center',
     },
     submitButtonText: {
         fontSize: 18,
         fontWeight: '600',
-        color: 'white', // White text color for the button
+        color: 'white',
     },
 });

@@ -3,6 +3,7 @@ import {
     getAuth,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
+    deleteUser as firebaseDeleteUser,
     onAuthStateChanged,
     signOut, sendEmailVerification
 } from "firebase/auth";
@@ -66,6 +67,26 @@ export const signUserOut = async () => {
     }
 
 }
+
+export const deleteCurrentUser = async () => {
+    const user = auth.currentUser;
+
+    if (!user) {
+        console.log("No user is currently logged in.");
+        return { success: false, error: "No user logged in" };
+    }
+
+    try {
+        await firebaseDeleteUser(user);
+        console.log("User deleted");
+        return { success: true };
+    } catch (error: any) {
+        console.log("Error deleting user:", error);
+        return { success: false, error: error.code || error.message };
+    }
+};
+
+
 
 // onAuthStateChanged(auth, (user) => {
 //     console.log(user);
