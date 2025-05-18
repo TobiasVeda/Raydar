@@ -16,7 +16,15 @@ export const getNameFromCoordinate = async (lat:number, lon:number)=>{
     let response = await fetch(URL);
     let data = (await response.json()).features[0].properties;
 
-    return data.city + ", " + data.country;
+    let name = "unknown";
+
+    if (data?.city && data?.country) {
+        name = data.city + ", " + data.country;
+    } else if(data?.formatted){
+        name = data.formatted;
+    }
+
+    return name;
 }
 
 export const getCoordinatesFromName = async (name:string)=>{

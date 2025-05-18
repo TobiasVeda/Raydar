@@ -3,20 +3,28 @@ import {
     Image,
     StyleSheet,
     Text,
-    View
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { GeoPoint } from "firebase/firestore";
+import _ from "lodash";
+import { addAsFavourite, getFavouriteState, removeAsFavourite } from "@/services/favourite";
 
 interface Props {
-    uv: number,
-    city: string,
-    temperature: number
+    uv: number;
+    city: string;
+    temperature: number;
+    coord: GeoPoint;
 }
 
-export const MainUvForecast: FC<Props> = ({ uv, city, temperature }) => {
+export const MainUvForecast: FC<Props> = ({ uv, city, temperature, coord }) => {
     const [currentSpf, setCurrentSpf] = useState("");
     const [category, setCategory] = useState("");
     const [image, setImage] = useState(require("../assets/images/low.png"));
+    const [starColor, setStarColor] = useState("grey");
+    const [starState, setStarState] = useState<any>("star-outline");
+    const [currentLoc, setCurrentLoc] = useState(new GeoPoint(0, 0));
 
     useEffect(() => {
         if (uv <= 2) {
@@ -42,9 +50,40 @@ export const MainUvForecast: FC<Props> = ({ uv, city, temperature }) => {
         }
     }, [uv]);
 
+    useEffect(() => {
+        setCurrentLoc(coord);
+    }, [coord]);
+
+    useEffect(() => {
+        const fetchStarState = async () => {
+            if (await getFavouriteState(currentLoc.latitude, currentLoc.longitude)) {
+                setStarState("star");
+                setStarColor("gold");
+            }
+        };
+        fetchStarState();
+    }, [currentLoc]);
+
+    const toggleFavourite = _.debounce(async () => {
+        if (starState === "star-outline") {
+            setStarState("star");
+            setStarColor("gold");
+            if (!(await addAsFavourite(currentLoc.latitude, currentLoc.longitude))) {
+                setStarState("star-outline");
+                setStarColor("grey");
+            }
+        } else {
+            setStarState("star-outline");
+            setStarColor("grey");
+            if (!(await removeAsFavourite(currentLoc.latitude, currentLoc.longitude))) {
+                setStarState("star");
+                setStarColor("gold");
+            }
+        }
+    }, 250);
+
     return (
         <View style={styles.mainCard}>
-            {/* Location */}
             <View style={styles.locationRow}>
                 <Ionicons
                     name="location-outline"
@@ -53,21 +92,21 @@ export const MainUvForecast: FC<Props> = ({ uv, city, temperature }) => {
                     style={styles.locationIcon}
                 />
                 <Text style={styles.locationText}>{city}</Text>
+                <TouchableOpacity style={styles.starIcon} onPress={toggleFavourite}>
+                    <Ionicons name={starState} size={25} color={starColor} />
+                </TouchableOpacity>
             </View>
 
-            {/* Main layout row */}
             <View style={styles.contentRow}>
-                {/* Left side: UV visual and number */}
                 <View style={styles.uvBlock}>
                     <Image source={image} style={styles.gaugeImage} />
                     <Text style={styles.bigNumber}>{uv}</Text>
                     <Text style={styles.category}>{category}</Text>
                 </View>
 
-                {/* Right side: stacked temp and SPF */}
                 <View style={styles.rightCol}>
                     <Text style={styles.temp}>{temperature}°</Text>
-                    <View style={{ height: 16 }} /> {/* Space between temp and SPF */}
+                    <View style={{ height: 16 }} />
                     <View style={styles.spfBlock}>
                         <Text style={styles.spfLabel}>SPF</Text>
                         <View style={styles.spfCircle}>
@@ -107,6 +146,10 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: '#171717',
     },
+    starIcon: {
+        marginLeft: 'auto',
+        marginRight: 5,
+    },
     contentRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -143,7 +186,7 @@ const styles = StyleSheet.create({
         marginRight: 40,
     },
     temp: {
-        fontSize: 48, // Increased from 36
+        fontSize: 48,
         fontWeight: '700',
         color: '#171717',
         marginRight: -20,
@@ -158,7 +201,7 @@ const styles = StyleSheet.create({
         color: '#171717',
     },
     spfCircle: {
-        width: 90,  // Increased from 70
+        width: 90,
         height: 90,
         borderRadius: 45,
         backgroundColor: '#F5AB3C66',
@@ -166,7 +209,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     spfNumber: {
-        fontSize: 36, // Increased from 28
+        fontSize: 36,
         fontWeight: '700',
         color: '#171717',
     },
