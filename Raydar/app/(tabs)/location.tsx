@@ -1,4 +1,4 @@
-import React, {FC, useState, useRef, useEffect} from 'react';
+import React, {FC, useState, useRef, useEffect, useCallback} from 'react';
 import {
     View,
     Text,
@@ -13,6 +13,7 @@ import {getUvForecast} from "@/services/yrApi";
 import {getNameFromCoordinate} from "@/services/geocode";
 import {getUserdata} from "@/services/db/db";
 import {GeoPoint} from "firebase/firestore";
+import {useFocusEffect} from "expo-router";
 
 
 const LocationScreen: FC = () => {
@@ -27,7 +28,7 @@ const LocationScreen: FC = () => {
     }, []);
 
     const updateForecast = async ()=>{
-        if (coordinates.length == 0){
+        if (!coordinates.length){
             return;
         }
         let temp:Location[] = [];
@@ -39,11 +40,18 @@ const LocationScreen: FC = () => {
         setLocations(temp);
     }
     const pullFromDb = async ()=>{
-        // setCoordinates((await getUserdata()).favouriteLocations);
-        setCoordinates([ // dummy data
-            new GeoPoint(58.3405, 8.59343),
-            new GeoPoint(39.56939, 2.65024)
-        ]);
+        let document = await getUserdata();
+        if (!document){
+            return;
+        }
+        setCoordinates(document!.favouriteLocations);
+        // setCoordinates([ // dummy data to prevent need for login
+        //     new GeoPoint(58.3405, 8.59343),
+        //     new GeoPoint(39.56939, 2.65024),
+        //     new GeoPoint(68.3405, 8.59343),
+        //     new GeoPoint(-1, -1),
+        //     new GeoPoint(0, 0),
+        // ]);
     }
 
     useEffect(() => {
@@ -55,6 +63,12 @@ const LocationScreen: FC = () => {
         // Might just call pullFromDb() in buttonPressed function
         pullFromDb();
     }, [newLocationAdded]);
+
+    useFocusEffect(
+        useCallback(() => {
+            pullFromDb();
+        }, [])
+    );
 
 
     const swipeableRefs = useRef<Array<GestureSwipeable | null>>([]);
@@ -96,7 +110,7 @@ const LocationScreen: FC = () => {
 
                 {locations.map((loc, idx) => (
                     <LocationCard
-                        key={loc.name}
+                        key={loc.name} // Should add checks when adding to prevent duplicates
                         ref={r => { swipeableRefs.current[idx] = r; }}
                         loc={loc}
                         onDelete={() => handleDelete(idx)}

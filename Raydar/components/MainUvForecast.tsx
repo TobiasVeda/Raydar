@@ -4,19 +4,25 @@ import React, { FC, useEffect, useState } from "react";
 import {
     Image,
     StyleSheet,
-    Text,
+    Text, TouchableOpacity,
     View,
     ViewStyle
 } from "react-native";
 import {Ionicons} from "@expo/vector-icons";
+import {addAsFavourite, getFavouriteState, removeAsFavourite} from "@/services/favourite";
+import _ from "lodash";
+import {GeoPoint} from "firebase/firestore";
+import {signIn} from "@/services/auth"; // button debounce
 
 interface Props {
     uv: number,
     city: string,
-    temperature: number
+    temperature: number,
+    coord: GeoPoint
 }
 
-export const MainUvForecast: FC<Props> = ({uv, city, temperature}) => {
+export const MainUvForecast: FC<Props> = ({uv, city, temperature, coord}) => {
+    const [currentLoc, setCurrentLoc] = useState(new GeoPoint(0, 0));
     const [currentUv, setCurrentUv] = useState(0);
     const [currentTemp, setCurrentTemp] = useState(0);
     const [currentCity, setCurrentCity] = useState("");
@@ -25,6 +31,41 @@ export const MainUvForecast: FC<Props> = ({uv, city, temperature}) => {
     const [image, setImage] = useState(
         require("../assets/images/low.png")
     );
+    const [starColor, setStarColor] = useState("grey");
+    const [starState, setStarState] = useState<any>("star-outline"); // Ionicons name is not type string
+
+
+    const toggleFavourite = _.debounce(async ()=>{
+        if (starState == "star-outline"){
+            setStarState("star");
+            setStarColor("gold");
+            if (!(await addAsFavourite(currentLoc.latitude, currentLoc.longitude))) {
+                setStarState("star-outline");
+                setStarColor("grey");
+            }
+        } else{
+            setStarState("star-outline");
+            setStarColor("grey");
+            if (!(await removeAsFavourite(currentLoc.latitude, currentLoc.longitude))){
+                setStarState("star");
+                setStarColor("gold");
+            }
+        }
+    }, 250);
+
+    useEffect(() => {
+        setCurrentLoc(coord);
+    }, [coord]);
+
+    useEffect(() => {
+        const setStartState = async ()=>{
+            if (await getFavouriteState(currentLoc.latitude, currentLoc.longitude)){
+                setStarState("star");
+                setStarColor("gold");
+            }
+        }
+        setStartState();
+    }, [currentLoc]);
 
     useEffect(() => {
         setCurrentUv(uv);
@@ -64,6 +105,13 @@ export const MainUvForecast: FC<Props> = ({uv, city, temperature}) => {
                     style={styles.locationIcon}
                 />
                 <Text style={styles.locationText}>{currentCity}</Text>
+                <TouchableOpacity style={styles.starIcon} onPress={toggleFavourite}>
+                    <Ionicons
+                        name={starState}
+                        size={25}
+                        color={starColor}
+                    />
+                </TouchableOpacity>
             </View>
             <View style={styles.mainCardRow}>
                 <Text style={styles.tempLarge}>{currentTemp}°</Text>
@@ -138,6 +186,10 @@ const styles = StyleSheet.create({
     },
     locationIcon: {
         marginRight: 6,
+    },
+    starIcon: {
+        marginLeft: 'auto',
+        marginRight: 5,
     },
     locationText: {
         fontSize: 16,
