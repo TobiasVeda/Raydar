@@ -32,18 +32,18 @@ export const getUvForecast = async (lat:number, lon:number) => {
     return trimmedData;
 }
 
-export const get12HourForecast = (trimmedData:UvStrength[]) => {
+export const get24HourForecast = (trimmedData:UvStrength[]) => {
 
     const now = new Date(trimmedData[2].timestamp);
-    const twelveHoursLater = new Date(Math.round(now.getTime()) + 12 * 60 * 60 * 1000); // 12 hours in ms
-    const index = trimmedData.findIndex(item => new Date(item.timestamp) > twelveHoursLater);
+    const twentyFourHoursLater = new Date(Math.round(now.getTime()) + 24 * 60 * 60 * 1000); // 12 hours in ms
+    const index = trimmedData.findIndex(item => new Date(item.timestamp) > twentyFourHoursLater);
 
     if (index === -1) {
-        // If no item is later than 12 hours, return the whole array
+        // If no item is later than 24 hours, return the whole array
         return [...trimmedData];
     }
 
-    // Splice up to the found index (do not include anything after 12 hours)
+    // Splice up to the found index (do not include anything after 24 hours)
     return trimmedData.slice(0, index);
 }
 

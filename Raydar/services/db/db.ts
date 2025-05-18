@@ -11,14 +11,14 @@ export interface UserDocument{
 
 export const setUserdata = async (newUser:UserDocument)=>{
     if (auth.currentUser){
-        await setUserdataToFirestore(newUser);
+        return await setUserdataToFirestore(newUser);
     } else{
         // Replace with local storage
-        await setUserdataToFirestore(newUser);
+        return await setUserdataToFirestore(newUser);
     }
 }
 
-export const getUserdata = async (): Promise<UserDocument>=>{
+export const getUserdata = async ()=>{
     if (auth.currentUser){
         return await getUserdataFromFirestore();
     } else{

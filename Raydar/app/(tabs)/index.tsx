@@ -3,15 +3,29 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity, } from 'react-nat
 import { Ionicons } from '@expo/vector-icons';
 import { MainUvForecast } from '@/components/MainUvForecast';
 import {getCurrentLocation} from "@/services/location";
-import {get12HourForecast, getUvForecast, UvStrength} from "@/services/yrApi";
+import {get24HourForecast, getUvForecast, UvStrength} from "@/services/yrApi";
 import { getNameFromCoordinate} from "@/services/geocode";
 import { Forecast12h} from "@/components/Forecast12h";
+import {getUserdata} from "@/services/db/db";
+import {testPush} from "@/services/db/dbFirestore";
+import {getAuth} from "firebase/auth";
+import {signIn} from "@/services/auth";
+import {GeoPoint} from "firebase/firestore";
 
 const ExploreScreen: FC = () => {
+    const [currentLoc, setCurrentLoc] = useState(new GeoPoint(0, 0));
     const [currentUv, setCurrentUv] = useState(0);
     const [currentTemp, setCurrentTemp] = useState(0);
     const [currentCity, setCurrentCity] = useState("Loading...");
     const [forecastData, setForecastData] = useState<UvStrength[]>([]);
+
+    const testing = async ()=>{
+        // await signIn("raydar.contact@gmail.com", "Password1.");
+    }
+    useEffect(() => {
+        testing();
+    }, []);
+
     useEffect(() => {
         const updateMain = async ()=>{
             let loc = await getCurrentLocation();
@@ -21,7 +35,8 @@ const ExploreScreen: FC = () => {
             }
             let forecast = await getUvForecast(loc!.lat, loc!.lon);
             let city = await getNameFromCoordinate(loc!.lat, loc!.lon);
-            let longTerm = get12HourForecast(forecast);
+            let longTerm = get24HourForecast(forecast);
+            setCurrentLoc(new GeoPoint(loc!.lat, loc!.lon));
             setCurrentUv(forecast[0].strength);
             setCurrentTemp(forecast[0].temperature);
             setCurrentCity(city);
@@ -51,7 +66,7 @@ const ExploreScreen: FC = () => {
                 <Text style={styles.mainHeader}>My location:</Text>
 
                 {/* Main card with location, temp, UV, and SPF */}
-                <MainUvForecast uv={currentUv} city={currentCity} temperature={currentTemp}/>
+                <MainUvForecast uv={currentUv} city={currentCity} temperature={currentTemp} coord={currentLoc}/>
 
                 {/* UV forecast title outside card for more space */}
                 <Text style={styles.forecastTitle}>UV Forecast:</Text>
