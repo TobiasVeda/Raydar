@@ -12,7 +12,6 @@ export const UvChart: React.FC<Props> = ({ forecast }) => {
 
     const allLabels = forecast.map(item => formatTo12Hour(item.timestamp));
     const filteredLabels = allLabels.map((label, index) => index % 2 === 0 ? label : '');
-
     const data = forecast.map(item => item.strength);
 
     return (
@@ -38,6 +37,11 @@ export const UvChart: React.FC<Props> = ({ forecast }) => {
                         r: '4',
                         strokeWidth: '2',
                         stroke: '#ffa726',
+                    },
+                    propsForBackgroundLines: {
+                        stroke: '#F5AB3C',     // same color as line or you can use '#ddd'
+                        strokeDasharray: '',   // solid line
+                        strokeWidth: 0.5,      // thinner
                     },
                 }}
                 bezier

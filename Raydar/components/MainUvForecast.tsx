@@ -1,14 +1,11 @@
-// components/MainUvForecast.tsx
-
 import React, { FC, useEffect, useState } from "react";
 import {
     Image,
     StyleSheet,
     Text,
-    View,
-    ViewStyle
+    View
 } from "react-native";
-import {Ionicons} from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Props {
     uv: number,
@@ -16,21 +13,12 @@ interface Props {
     temperature: number
 }
 
-export const MainUvForecast: FC<Props> = ({uv, city, temperature}) => {
-    const [currentUv, setCurrentUv] = useState(0);
-    const [currentTemp, setCurrentTemp] = useState(0);
-    const [currentCity, setCurrentCity] = useState("");
+export const MainUvForecast: FC<Props> = ({ uv, city, temperature }) => {
     const [currentSpf, setCurrentSpf] = useState("");
     const [category, setCategory] = useState("");
-    const [image, setImage] = useState(
-        require("../assets/images/low.png")
-    );
+    const [image, setImage] = useState(require("../assets/images/low.png"));
 
     useEffect(() => {
-        setCurrentUv(uv);
-        setCurrentTemp(temperature);
-        setCurrentCity(city);
-
         if (uv <= 2) {
             setCategory("Low");
             setImage(require("../assets/images/low.png"));
@@ -52,10 +40,11 @@ export const MainUvForecast: FC<Props> = ({uv, city, temperature}) => {
             setImage(require("../assets/images/high.png"));
             setCurrentSpf("50+");
         }
-    }, [uv, city, temperature]);
+    }, [uv]);
 
     return (
         <View style={styles.mainCard}>
+            {/* Location */}
             <View style={styles.locationRow}>
                 <Ionicons
                     name="location-outline"
@@ -63,21 +52,27 @@ export const MainUvForecast: FC<Props> = ({uv, city, temperature}) => {
                     color="#171717"
                     style={styles.locationIcon}
                 />
-                <Text style={styles.locationText}>{currentCity}</Text>
+                <Text style={styles.locationText}>{city}</Text>
             </View>
-            <View style={styles.mainCardRow}>
-                <Text style={styles.tempLarge}>{currentTemp}°</Text>
+
+            {/* Main layout row */}
+            <View style={styles.contentRow}>
+                {/* Left side: UV visual and number */}
                 <View style={styles.uvBlock}>
-                    <View style={[styles.readingContainer]}>
-                        <Image source={image} style={styles.gaugeImage} />
-                        <Text style={styles.bigNumber}>{currentUv}</Text>
-                        <Text style={styles.category}>{category}</Text>
-                    </View>
+                    <Image source={image} style={styles.gaugeImage} />
+                    <Text style={styles.bigNumber}>{uv}</Text>
+                    <Text style={styles.category}>{category}</Text>
                 </View>
-                <View style={styles.spfBlock}>
-                    <Text style={styles.spfLabel}>SPF</Text>
-                    <View style={styles.spfCircle}>
-                        <Text style={styles.spfNumber}>{currentSpf}</Text>
+
+                {/* Right side: stacked temp and SPF */}
+                <View style={styles.rightCol}>
+                    <Text style={styles.temp}>{temperature}°</Text>
+                    <View style={{ height: 16 }} /> {/* Space between temp and SPF */}
+                    <View style={styles.spfBlock}>
+                        <Text style={styles.spfLabel}>SPF</Text>
+                        <View style={styles.spfCircle}>
+                            <Text style={styles.spfNumber}>{currentSpf}</Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -86,45 +81,13 @@ export const MainUvForecast: FC<Props> = ({uv, city, temperature}) => {
 };
 
 const styles = StyleSheet.create({
-    readingContainer: {
-        backgroundColor: "#FFFFFF",
-        borderRadius: 20,
-        paddingVertical: 26,
-        paddingHorizontal: 18,
-        alignItems: "center",
-        marginBottom: 18,
-
-        // ---- flattened out ----
-        shadowColor: "transparent",
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0,
-        shadowRadius: 0,
-        elevation: 0,
-    },
-    gaugeImage: {
-        width: 120,
-        height: 60,
-        resizeMode: "contain",
-        borderRadius: 10,
-    },
-    bigNumber: {
-        fontSize: 72,
-        fontWeight: "700",
-        lineHeight: 72,
-    },
-    category: {
-        fontSize: 22,
-        fontWeight: "600",
-        marginTop: 4,
-    },
     mainCard: {
-        width: '100%',             // fill the ScrollView’s inner width
+        width: '100%',
         backgroundColor: '#FFFFFF',
-        borderRadius: 20,          // match forecastCard corners
-        paddingVertical: 12,       // same vertical padding
-        paddingHorizontal: 8,      // same horizontal padding
+        borderRadius: 20,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
         marginBottom: 18,
-        // same drop-shadow as forecastCard
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -144,20 +107,46 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: '#171717',
     },
-
-    mainCardRow: {
+    contentRow: {
         flexDirection: 'row',
-        alignItems: 'center',
         justifyContent: 'space-between',
     },
-    tempLarge: {
-        fontSize: 48,
+    uvBlock: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
+    },
+    gaugeImage: {
+        width: 140,
+        height: 70,
+        resizeMode: "contain",
+        marginBottom: 8,
+        marginRight: 30,
+    },
+    bigNumber: {
+        fontSize: 80,
+        fontWeight: '600',
+        color: '#171717',
+        lineHeight: 80,
+        marginRight: 30,
+    },
+    category: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#444',
+        marginTop: 4,
+        marginRight: 30,
+    },
+    rightCol: {
+        alignItems: 'flex-end',
+        flex: 0.5,
+        marginRight: 40,
+    },
+    temp: {
+        fontSize: 48, // Increased from 36
         fontWeight: '700',
         color: '#171717',
-    },
-    uvBlock: {
-        flex: 1,
-        alignItems: 'center',
+        marginRight: -20,
     },
     spfBlock: {
         alignItems: 'center',
@@ -169,15 +158,15 @@ const styles = StyleSheet.create({
         color: '#171717',
     },
     spfCircle: {
-        width: 70,
-        height: 70,
-        borderRadius: 35,
+        width: 90,  // Increased from 70
+        height: 90,
+        borderRadius: 45,
         backgroundColor: '#F5AB3C66',
         justifyContent: 'center',
         alignItems: 'center',
     },
     spfNumber: {
-        fontSize: 32,
+        fontSize: 36, // Increased from 28
         fontWeight: '700',
         color: '#171717',
     },
