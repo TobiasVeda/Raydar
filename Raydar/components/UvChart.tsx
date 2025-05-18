@@ -11,7 +11,7 @@ export const UvChart: React.FC<Props> = ({ forecast }) => {
     if (forecast.length === 0) return null;
 
     const allLabels = forecast.map(item => formatTo12Hour(item.timestamp));
-    const filteredLabels = allLabels.map((label, index) => index % 2 === 0 ? label : '');
+    const filteredLabels = allLabels.map((label, index) => index % 4 === 0 ? label : '');
     const data = forecast.map(item => item.strength);
 
     return (
