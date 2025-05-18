@@ -62,7 +62,7 @@ const ExploreScreen: FC = () => {
                 <Forecast12h forecast={forecastData}/>
 
                 <TouchableOpacity style={styles.addBtn} activeOpacity={0.8}>
-                    <Text style={styles.addTxt}>Enable Notifications</Text>
+                    <Text style={styles.addTxt}>Remind Me To Reapply</Text>
                 </TouchableOpacity>
                 <View style={{ height: 24 }} />
                 <Text style={styles.forecastTitle}>UV Chart:</Text>
