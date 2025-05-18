@@ -1,77 +1,32 @@
-// components/MainUvForecast.tsx
-
 import React, { FC, useEffect, useState } from "react";
 import {
     Image,
     StyleSheet,
-    Text, TouchableOpacity,
+    Text,
+    TouchableOpacity,
     View,
-    ViewStyle
 } from "react-native";
-import {Ionicons} from "@expo/vector-icons";
-import {addAsFavourite, getFavouriteState, removeAsFavourite} from "@/services/favourite";
+import { Ionicons } from "@expo/vector-icons";
+import { GeoPoint } from "firebase/firestore";
 import _ from "lodash";
-import {GeoPoint} from "firebase/firestore";
-import {signIn} from "@/services/auth"; // button debounce
+import { addAsFavourite, getFavouriteState, removeAsFavourite } from "@/services/favourite";
 
 interface Props {
-    uv: number,
-    city: string,
-    temperature: number,
-    coord: GeoPoint
+    uv: number;
+    city: string;
+    temperature: number;
+    coord: GeoPoint;
 }
 
-export const MainUvForecast: FC<Props> = ({uv, city, temperature, coord}) => {
-    const [currentLoc, setCurrentLoc] = useState(new GeoPoint(0, 0));
-    const [currentUv, setCurrentUv] = useState(0);
-    const [currentTemp, setCurrentTemp] = useState(0);
-    const [currentCity, setCurrentCity] = useState("");
+export const MainUvForecast: FC<Props> = ({ uv, city, temperature, coord }) => {
     const [currentSpf, setCurrentSpf] = useState("");
     const [category, setCategory] = useState("");
-    const [image, setImage] = useState(
-        require("../assets/images/low.png")
-    );
+    const [image, setImage] = useState(require("../assets/images/low.png"));
     const [starColor, setStarColor] = useState("grey");
-    const [starState, setStarState] = useState<any>("star-outline"); // Ionicons name is not type string
-
-
-    const toggleFavourite = _.debounce(async ()=>{
-        if (starState == "star-outline"){
-            setStarState("star");
-            setStarColor("gold");
-            if (!(await addAsFavourite(currentLoc.latitude, currentLoc.longitude))) {
-                setStarState("star-outline");
-                setStarColor("grey");
-            }
-        } else{
-            setStarState("star-outline");
-            setStarColor("grey");
-            if (!(await removeAsFavourite(currentLoc.latitude, currentLoc.longitude))){
-                setStarState("star");
-                setStarColor("gold");
-            }
-        }
-    }, 250);
+    const [starState, setStarState] = useState<any>("star-outline");
+    const [currentLoc, setCurrentLoc] = useState(new GeoPoint(0, 0));
 
     useEffect(() => {
-        setCurrentLoc(coord);
-    }, [coord]);
-
-    useEffect(() => {
-        const setStartState = async ()=>{
-            if (await getFavouriteState(currentLoc.latitude, currentLoc.longitude)){
-                setStarState("star");
-                setStarColor("gold");
-            }
-        }
-        setStartState();
-    }, [currentLoc]);
-
-    useEffect(() => {
-        setCurrentUv(uv);
-        setCurrentTemp(temperature);
-        setCurrentCity(city);
-
         if (uv <= 2) {
             setCategory("Low");
             setImage(require("../assets/images/low.png"));
@@ -93,7 +48,39 @@ export const MainUvForecast: FC<Props> = ({uv, city, temperature, coord}) => {
             setImage(require("../assets/images/high.png"));
             setCurrentSpf("50+");
         }
-    }, [uv, city, temperature]);
+    }, [uv]);
+
+    useEffect(() => {
+        setCurrentLoc(coord);
+    }, [coord]);
+
+    useEffect(() => {
+        const fetchStarState = async () => {
+            if (await getFavouriteState(currentLoc.latitude, currentLoc.longitude)) {
+                setStarState("star");
+                setStarColor("gold");
+            }
+        };
+        fetchStarState();
+    }, [currentLoc]);
+
+    const toggleFavourite = _.debounce(async () => {
+        if (starState === "star-outline") {
+            setStarState("star");
+            setStarColor("gold");
+            if (!(await addAsFavourite(currentLoc.latitude, currentLoc.longitude))) {
+                setStarState("star-outline");
+                setStarColor("grey");
+            }
+        } else {
+            setStarState("star-outline");
+            setStarColor("grey");
+            if (!(await removeAsFavourite(currentLoc.latitude, currentLoc.longitude))) {
+                setStarState("star");
+                setStarColor("gold");
+            }
+        }
+    }, 250);
 
     return (
         <View style={styles.mainCard}>
@@ -104,28 +91,27 @@ export const MainUvForecast: FC<Props> = ({uv, city, temperature, coord}) => {
                     color="#171717"
                     style={styles.locationIcon}
                 />
-                <Text style={styles.locationText}>{currentCity}</Text>
+                <Text style={styles.locationText}>{city}</Text>
                 <TouchableOpacity style={styles.starIcon} onPress={toggleFavourite}>
-                    <Ionicons
-                        name={starState}
-                        size={25}
-                        color={starColor}
-                    />
+                    <Ionicons name={starState} size={25} color={starColor} />
                 </TouchableOpacity>
             </View>
-            <View style={styles.mainCardRow}>
-                <Text style={styles.tempLarge}>{currentTemp}°</Text>
+
+            <View style={styles.contentRow}>
                 <View style={styles.uvBlock}>
-                    <View style={[styles.readingContainer]}>
-                        <Image source={image} style={styles.gaugeImage} />
-                        <Text style={styles.bigNumber}>{currentUv}</Text>
-                        <Text style={styles.category}>{category}</Text>
-                    </View>
+                    <Image source={image} style={styles.gaugeImage} />
+                    <Text style={styles.bigNumber}>{uv}</Text>
+                    <Text style={styles.category}>{category}</Text>
                 </View>
-                <View style={styles.spfBlock}>
-                    <Text style={styles.spfLabel}>SPF</Text>
-                    <View style={styles.spfCircle}>
-                        <Text style={styles.spfNumber}>{currentSpf}</Text>
+
+                <View style={styles.rightCol}>
+                    <Text style={styles.temp}>{temperature}°</Text>
+                    <View style={{ height: 16 }} />
+                    <View style={styles.spfBlock}>
+                        <Text style={styles.spfLabel}>SPF</Text>
+                        <View style={styles.spfCircle}>
+                            <Text style={styles.spfNumber}>{currentSpf}</Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -134,45 +120,13 @@ export const MainUvForecast: FC<Props> = ({uv, city, temperature, coord}) => {
 };
 
 const styles = StyleSheet.create({
-    readingContainer: {
-        backgroundColor: "#FFFFFF",
-        borderRadius: 20,
-        paddingVertical: 26,
-        paddingHorizontal: 18,
-        alignItems: "center",
-        marginBottom: 18,
-
-        // ---- flattened out ----
-        shadowColor: "transparent",
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0,
-        shadowRadius: 0,
-        elevation: 0,
-    },
-    gaugeImage: {
-        width: 120,
-        height: 60,
-        resizeMode: "contain",
-        borderRadius: 10,
-    },
-    bigNumber: {
-        fontSize: 72,
-        fontWeight: "700",
-        lineHeight: 72,
-    },
-    category: {
-        fontSize: 22,
-        fontWeight: "600",
-        marginTop: 4,
-    },
     mainCard: {
-        width: '100%',             // fill the ScrollView’s inner width
+        width: '100%',
         backgroundColor: '#FFFFFF',
-        borderRadius: 20,          // match forecastCard corners
-        paddingVertical: 12,       // same vertical padding
-        paddingHorizontal: 8,      // same horizontal padding
+        borderRadius: 20,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
         marginBottom: 18,
-        // same drop-shadow as forecastCard
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -187,29 +141,55 @@ const styles = StyleSheet.create({
     locationIcon: {
         marginRight: 6,
     },
-    starIcon: {
-        marginLeft: 'auto',
-        marginRight: 5,
-    },
     locationText: {
         fontSize: 16,
         fontWeight: '500',
         color: '#171717',
     },
-
-    mainCardRow: {
+    starIcon: {
+        marginLeft: 'auto',
+        marginRight: 5,
+    },
+    contentRow: {
         flexDirection: 'row',
-        alignItems: 'center',
         justifyContent: 'space-between',
     },
-    tempLarge: {
+    uvBlock: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
+    },
+    gaugeImage: {
+        width: 140,
+        height: 70,
+        resizeMode: "contain",
+        marginBottom: 8,
+        marginRight: 30,
+    },
+    bigNumber: {
+        fontSize: 80,
+        fontWeight: '600',
+        color: '#171717',
+        lineHeight: 80,
+        marginRight: 30,
+    },
+    category: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#444',
+        marginTop: 4,
+        marginRight: 30,
+    },
+    rightCol: {
+        alignItems: 'flex-end',
+        flex: 0.5,
+        marginRight: 40,
+    },
+    temp: {
         fontSize: 48,
         fontWeight: '700',
         color: '#171717',
-    },
-    uvBlock: {
-        flex: 1,
-        alignItems: 'center',
+        marginRight: -20,
     },
     spfBlock: {
         alignItems: 'center',
@@ -221,15 +201,15 @@ const styles = StyleSheet.create({
         color: '#171717',
     },
     spfCircle: {
-        width: 70,
-        height: 70,
-        borderRadius: 35,
+        width: 90,
+        height: 90,
+        borderRadius: 45,
         backgroundColor: '#F5AB3C66',
         justifyContent: 'center',
         alignItems: 'center',
     },
     spfNumber: {
-        fontSize: 32,
+        fontSize: 36,
         fontWeight: '700',
         color: '#171717',
     },
