@@ -15,6 +15,7 @@ const ExploreScreen: FC = () => {
     useEffect(() => {
         const updateMain = async ()=>{
             let loc = await getCurrentLocation();
+            console.log(loc);
             if (loc == null){
                 setCurrentCity("Location Permission Denied")
                 return;
