@@ -6,6 +6,8 @@ import {getCurrentLocation} from "@/services/location";
 import {get12HourForecast, getUvForecast, UvStrength} from "@/services/yrApi";
 import { getNameFromCoordinate} from "@/services/geocode";
 import { Forecast12h} from "@/components/Forecast12h";
+import { UvChart } from '@/components/UvChart';
+
 
 const ExploreScreen: FC = () => {
     const [currentUv, setCurrentUv] = useState(0);
@@ -61,6 +63,9 @@ const ExploreScreen: FC = () => {
                 <TouchableOpacity style={styles.addBtn} activeOpacity={0.8}>
                     <Text style={styles.addTxt}>Enable Notifications</Text>
                 </TouchableOpacity>
+                <View style={{ height: 24 }} />
+                <Text style={styles.forecastTitle}>UV Chart:</Text>
+                <UvChart forecast={forecastData} />
             </ScrollView>
         </View>
     );
