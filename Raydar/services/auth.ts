@@ -8,25 +8,18 @@ import {
     signOut, sendEmailVerification
 } from "firebase/auth";
 
-
 export const signUp = async (email:string, password:string) => {
 
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        try {
-            await sendEmailVerification(user);
-        } catch (e) {
-            console.log("Error sending email");
-            console.log(e);
-        }
-        // console.log("W");
-        // console.log(user);
+        await sendEmailVerification(user);
+        await signOut(auth);
+        alert("Verification email sent");
+
         return true;
     } catch (e) {
-        // const errorCode = e.code;
-        // const errorMessage = e.message;
         console.log("Error signing up:");
         console.log(e);
         return false;
@@ -41,15 +34,15 @@ export const signIn = async (email:string, password:string) => {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        return true;
-        // console.log("W");
-        // console.log(user);
+        if (!user.emailVerified){
+            await signOut(auth);
+            return 2;
+        }
+        return 1;
     } catch (e) {
-        // const errorCode = e.code;
-        // const errorMessage = e.message;
         console.log("Error signing in:");
         console.log(e);
-        return false;
+        return -1;
     }
 
 }
@@ -57,8 +50,7 @@ export const signIn = async (email:string, password:string) => {
 export const signUserOut = async () => {
 
     try {
-        const userCredential = await signOut(auth)
-        // console.log("Signed out");
+        await signOut(auth)
         return true;
     } catch (e) {
         console.log("Error signing out:");
@@ -79,26 +71,9 @@ export const deleteCurrentUser = async () => {
     try {
         await firebaseDeleteUser(user);
         console.log("User deleted");
-        return { success: true };
+        return true;
     } catch (error: any) {
         console.log("Error deleting user:", error);
-        return { success: false, error: error.code || error.message };
+        return false;
     }
 };
-
-
-
-// onAuthStateChanged(auth, (user) => {
-//     console.log(user);
-//     if (user) {
-//         // User is signed in, see docs for a list of available properties
-//         // https://firebase.google.com/docs/reference/js/auth.user
-//         const uid = user.uid;
-//         // ...
-//         console.log("sign in");
-//     } else {
-//         // User is signed out
-//         // ...
-//         console.log("sign out");
-//     }
-// });

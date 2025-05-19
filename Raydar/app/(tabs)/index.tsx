@@ -8,6 +8,7 @@ import { getNameFromCoordinate} from "@/services/geocode";
 import { Forecast12h} from "@/components/Forecast12h";
 import { UvChart } from '@/components/UvChart';
 import {GeoPoint} from "firebase/firestore";
+import {useData} from "@/contexts/DataProvider";
 
 const ExploreScreen: FC = () => {
     const [currentLoc, setCurrentLoc] = useState(new GeoPoint(0, 0));
@@ -35,6 +36,10 @@ const ExploreScreen: FC = () => {
         const interval = setInterval(() => {
             updateMain();
         },5*60*1000); // 5 minutes
+    }, []);
+
+    useEffect(() => {
+
     }, []);
 
     return (

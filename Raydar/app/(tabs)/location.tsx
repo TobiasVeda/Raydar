@@ -11,14 +11,11 @@ import type { Swipeable as GestureSwipeable } from 'react-native-gesture-handler
 import { LocationCard, Location } from '@/components/LocationCard';
 import {getUvForecast} from "@/services/yrApi";
 import {getNameFromCoordinate} from "@/services/geocode";
-import {getUserdata} from "@/services/db/db";
-import {GeoPoint} from "firebase/firestore";
-import {useFocusEffect} from "expo-router";
+import {useData} from "@/contexts/DataProvider";
 
 
 const LocationScreen: FC = () => {
-    const [newLocationAdded, setNewLocationAdded] = useState(0);
-    const [coordinates, setCoordinates] = useState<GeoPoint[]>([])
+    const {favouriteLocations} = useData();
     const [locations, setLocations] = useState<Location[]>([]);
 
     useEffect(() => {
@@ -28,47 +25,21 @@ const LocationScreen: FC = () => {
     }, []);
 
     const updateForecast = async ()=>{
-        if (!coordinates.length){
-            return;
-        }
         let temp:Location[] = [];
-        for (let i = 0; i < coordinates.length; i++) {
-            let name = await getNameFromCoordinate(coordinates[i].latitude, coordinates[i].longitude);
-            let uv = (await getUvForecast(coordinates[i].latitude, coordinates[i].longitude))[0].strength;
-            temp[i] = {name:name, uv:uv};
+
+        if (favouriteLocations.length){
+            for (let i = 0; i < favouriteLocations.length; i++) {
+                let name = await getNameFromCoordinate(favouriteLocations[i].latitude, favouriteLocations[i].longitude);
+                let uv = (await getUvForecast(favouriteLocations[i].latitude, favouriteLocations[i].longitude))[0].strength;
+                temp[i] = {name:name, uv:uv};
+            }
         }
         setLocations(temp);
-    }
-    const pullFromDb = async ()=>{
-        let document = await getUserdata();
-        if (!document){
-            return;
-        }
-        setCoordinates(document!.favouriteLocations);
-        // setCoordinates([ // dummy data to prevent need for login
-        //     new GeoPoint(58.3405, 8.59343),
-        //     new GeoPoint(39.56939, 2.65024),
-        //     new GeoPoint(68.3405, 8.59343),
-        //     new GeoPoint(-1, -1),
-        //     new GeoPoint(0, 0),
-        // ]);
     }
 
     useEffect(() => {
         updateForecast();
-    }, [coordinates]);
-
-    useEffect(() => {
-        // new favourite location added, immediately pull from db to update
-        // Might just call pullFromDb() in buttonPressed function
-        pullFromDb();
-    }, [newLocationAdded]);
-
-    useFocusEffect(
-        useCallback(() => {
-            pullFromDb();
-        }, [])
-    );
+    }, [favouriteLocations]);
 
 
     const swipeableRefs = useRef<Array<GestureSwipeable | null>>([]);

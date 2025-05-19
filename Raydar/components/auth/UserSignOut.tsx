@@ -1,12 +1,15 @@
 import React from 'react';
 import { signUserOut } from "@/services/auth";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import {useData} from "@/contexts/DataProvider";
 
 export const UserSignOut = () => {
+    const {getData} = useData();
     const buttonPressed = async () => {
         const result = await signUserOut();
         if (result) {
             alert("User signed out");
+            getData(); // get from local storage
         } else {
             alert("Error, couldn't sign out");
         }

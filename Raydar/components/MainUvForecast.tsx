@@ -9,7 +9,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { GeoPoint } from "firebase/firestore";
 import _ from "lodash";
-import { addAsFavourite, getFavouriteState, removeAsFavourite } from "@/services/favourite";
+import {useData} from "@/contexts/DataProvider";
 
 interface Props {
     uv: number;
@@ -19,6 +19,7 @@ interface Props {
 }
 
 export const MainUvForecast: FC<Props> = ({ uv, city, temperature, coord }) => {
+    const {addAsFavourite, getFavouriteState, removeAsFavourite} = useData();
     const [currentSpf, setCurrentSpf] = useState("");
     const [category, setCategory] = useState("");
     const [image, setImage] = useState(require("../assets/images/low.png"));
