@@ -14,7 +14,7 @@ export const setUserdata = async (newUser:UserDocument)=>{
         return await setUserdataToFirestore(newUser);
     } else{
         // Replace with local storage
-        return await setUserdataToFirestore(newUser);
+        // return await setUserdataToFirestore(newUser);
     }
 }
 
@@ -23,6 +23,6 @@ export const getUserdata = async ()=>{
         return await getUserdataFromFirestore();
     } else{
         // Replace with local storage
-        return await getUserdataFromFirestore();
+        // return await getUserdataFromFirestore();
     }
 }

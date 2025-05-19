@@ -1,13 +1,16 @@
 import React, { FC, useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MainUvForecast } from '@/components/MainUvForecast';
 import {getCurrentLocation} from "@/services/location";
 import {get24HourForecast, getUvForecast, UvStrength} from "@/services/yrApi";
-import {getCoordinatesFromName, getNameFromCoordinate} from "@/services/geocode";
+import {getNameFromCoordinate} from "@/services/geocode";
 import { Forecast12h} from "@/components/Forecast12h";
 import { UvChart } from '@/components/UvChart';
 import {GeoPoint} from "firebase/firestore";
+import {signIn} from "@/services/auth";
+import {requestNotificationPermission} from "@/services/notification";
+import {SetReminder} from "@/components/SetReminder";
 
 const ExploreScreen: FC = () => {
     const [currentLoc, setCurrentLoc] = useState(new GeoPoint(0, 0));
@@ -39,8 +42,7 @@ const ExploreScreen: FC = () => {
 
     useEffect(() => {
         const x = async () => {
-            let b = await getNameFromCoordinate(59.9139, 10.7522);
-            console.log(b);
+            await signIn("raydar.contact@gmail.com", "Password1.");
         }
         x();
     }, []);
@@ -69,9 +71,9 @@ const ExploreScreen: FC = () => {
                 <Text style={styles.forecastTitle}>UV Forecast:</Text>
                 <Forecast12h forecast={forecastData}/>
 
-                <TouchableOpacity style={styles.addBtn} activeOpacity={0.8}>
-                    <Text style={styles.addTxt}>Remind Me To Reapply</Text>
-                </TouchableOpacity>
+                {/* TODO: Add uv/spf to time calculation, uncomment notification sender*/}
+                <SetReminder uv={currentUv}/>
+
                 <View style={{ height: 24 }} />
                 <Text style={styles.forecastTitle}>UV Chart:</Text>
                 <UvChart forecast={forecastData} />

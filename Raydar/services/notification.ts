@@ -1,11 +1,52 @@
-import * as Notifications from 'expo-notifications';
+import { Platform } from 'react-native';
 import * as Device from 'expo-device';
-import {Platform} from "react-native";
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 
-export async function requestNotificationPermission() {
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+        shouldShowBanner: true,
+        shouldShowList: true,
+        shouldShowAlert: true
+    }),
+});
+
+export const sendPushNotification = async (expoPushToken: string) => {
+    const message = {
+        to: expoPushToken,
+        sound: 'default',
+        title: 'Original Title',
+        body: 'And here is the body!',
+        data: { someData: 'goes here' },
+    };
+
+    await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(message),
+    });
+}
+
+export const requestNotificationPermission = async () => {
+
+    if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#FF231F7C',
+        });
+    }
+
     if (!Device.isDevice) {
         alert('Push notifications are only supported on physical devices.');
-        return false;
+        return null;
     }
 
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -18,52 +59,37 @@ export async function requestNotificationPermission() {
 
     if (finalStatus !== 'granted') {
         alert('Notification permission not granted.');
-        return false;
+        return null;
     }
 
-    console.log('Notification permission granted!');
-    return true;
+    const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+    if (!projectId) {
+        console.log('Project ID not found');
+    }
+    try {
+        const pushTokenString = (
+            await Notifications.getExpoPushTokenAsync({projectId,})
+        ).data;
+        console.log('Notification permission granted!');
+        return pushTokenString;
+
+    } catch (e: unknown) {
+        console.log(`${e}`);
+        return null;
+    }
 }
+
+
 
 export const testMessage = async ()=>{
-    // Will send on loop, do not run
-    if (Platform.OS != "web") {
-        await Notifications.scheduleNotificationAsync({
-            content: {
-                title: "You've got mail! 📬",
-                body: 'Here is the notification body',
-                data: {data: 'goes here', test: {test1: 'more data'}},
-            },
-            trigger: {
-                type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-                seconds: 10,
-            },
-        });
-    }
-}
-
-export const scheduleMorningUpdate = async (uv:number, spf:number, hour:number)=>{
-    if (Platform.OS != "web") {
-        await Notifications.scheduleNotificationAsync({
-            content: {
-                title: "Today's UV is " + uv,
-                body: "We recommend SPF " + spf,
-                data: {data: 'data', test: {test1: 'more data'}},
-            },
-            trigger: {
-                type: Notifications.SchedulableTriggerInputTypes.DAILY,
-                hour: hour,
-                minute: 0
-            },
-        });
-    }
+        await Notifications.cancelAllScheduledNotificationsAsync();
 }
 
 export const scheduleReapplyReminder = async (minutes:number)=>{
     if (Platform.OS != "web") {
         await Notifications.scheduleNotificationAsync({
             content: {
-                title: "Reapply sunscreen",
+                title: "penis",
                 body: 'Protection from sunscreen is greatly diminished',
                 data: {data: 'data', test: {test1: 'more data'}},
             },
