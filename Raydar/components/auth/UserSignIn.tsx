@@ -1,16 +1,21 @@
 import { TouchableOpacity, Text, TextInput, View, StyleSheet } from 'react-native';
 import { useState } from 'react';
 import { signIn } from '@/services/auth';
+import {useData} from "@/contexts/DataProvider";
 
 export const UserSignIn = () => {
+    const {getData} = useData();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const buttonPressed = async () => {
         let result = await signIn(email, password);
         // Replace alert with something more user-friendly
-        if (result) {
+        if (result == 1) {
             alert("User signed in");
+            getData();
+        } else if(result == 2){
+            alert("Verify your email");
         } else {
             alert("Error, couldn't sign in");
         }

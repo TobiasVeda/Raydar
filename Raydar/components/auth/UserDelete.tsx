@@ -1,20 +1,20 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { getAuth, deleteUser } from 'firebase/auth';
+import {deleteCurrentUser} from "@/services/auth";
+import {useData} from "@/contexts/DataProvider";
+
+
 
 export const UserDelete = ({ onDeleted }: { onDeleted?: () => void }) => {
+    const {getData} = useData();
+
     const buttonPressed = async () => {
-        const auth = getAuth();
-        const user = auth.currentUser;
 
-        if (!user) return;
-
-        try {
-            await deleteUser(user);
+        if (await deleteCurrentUser()){
+            getData();
             if (onDeleted) onDeleted();
-        } catch (error) {
-            console.log("Error deleting user:", error);
         }
+
     };
 
     return (
