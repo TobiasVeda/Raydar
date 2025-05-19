@@ -8,13 +8,10 @@ export interface LocationCoordinate{
 }
 
 export const getNameFromCoordinate = async (lat:number, lon:number)=>{
-    let URL1 = "https://api.geoapify.com/v1/geocode/reverse?lat="
-    let URL2 = "&lon=";
-    let URL3 = "&apiKey="
-    let URL = URL1 + lat.toString() + URL2 + lon.toString() + URL3 + geocodeApiKey;
+    let URL = "/reverseGeocode?lat=" + lat.toString() + "&lon=" + lon.toString();
 
-    let response = await fetch(URL);
-    let data = (await response.json()).features[0].properties;
+    let response = JSON.parse((await (await fetch(URL)).text()));
+    let data = response.features[0].properties;
 
     let name = "unknown";
 
@@ -32,13 +29,10 @@ export const getCoordinatesFromName = async (name:string)=>{
     // Show the user all options and make them pick one
     // The coordinates of the one the user picks should be added to db
     // All other references to location name made through getNameFromCoordinate()
+    let URL = "/geocode?name=" + name;
 
-    let URL1 = "https://api.geoapify.com/v1/geocode/search?text="
-    let URL2 = "&apiKey=";
-    let URL = URL1 + name + URL2 + geocodeApiKey;
-
-    let response = await fetch(URL);
-    let data = (await response.json()).features;
+    let response = JSON.parse((await (await fetch(URL)).text()));
+    let data = response.features;
 
     let trimmedData:LocationCoordinate[] = [];
 

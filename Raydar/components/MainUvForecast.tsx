@@ -19,7 +19,7 @@ interface Props {
 }
 
 export const MainUvForecast: FC<Props> = ({ uv, city, temperature, coord }) => {
-    const {addAsFavourite, getFavouriteState, removeAsFavourite} = useData();
+    const {username, currentLocation, favouriteLocations, notificationsEnabled, addAsFavourite, getFavouriteState, removeAsFavourite} = useData();
     const [currentSpf, setCurrentSpf] = useState("");
     const [category, setCategory] = useState("");
     const [image, setImage] = useState(require("../assets/images/low.png"));
@@ -63,7 +63,7 @@ export const MainUvForecast: FC<Props> = ({ uv, city, temperature, coord }) => {
             }
         };
         fetchStarState();
-    }, [currentLoc]);
+    }, [currentLoc, username, currentLocation, favouriteLocations, notificationsEnabled]);
 
     const toggleFavourite = _.debounce(async () => {
         if (starState === "star-outline") {

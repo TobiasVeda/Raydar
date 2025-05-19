@@ -4,11 +4,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { MainUvForecast } from '@/components/MainUvForecast';
 import {getCurrentLocation} from "@/services/location";
 import {get24HourForecast, getUvForecast, UvStrength} from "@/services/yrApi";
-import { getNameFromCoordinate} from "@/services/geocode";
+import {getCoordinatesFromName, getNameFromCoordinate} from "@/services/geocode";
 import { Forecast12h} from "@/components/Forecast12h";
 import { UvChart } from '@/components/UvChart';
 import {GeoPoint} from "firebase/firestore";
-import {useData} from "@/contexts/DataProvider";
 
 const ExploreScreen: FC = () => {
     const [currentLoc, setCurrentLoc] = useState(new GeoPoint(0, 0));
@@ -39,7 +38,11 @@ const ExploreScreen: FC = () => {
     }, []);
 
     useEffect(() => {
-
+        const x = async () => {
+            let b = await getNameFromCoordinate(59.9139, 10.7522);
+            console.log(b);
+        }
+        x();
     }, []);
 
     return (
