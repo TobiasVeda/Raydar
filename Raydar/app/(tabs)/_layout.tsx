@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 import { HapticTab } from '@/components/HapticTab';
 import { Ionicons } from '@expo/vector-icons';
 import type { BottomTabBarIconProps } from '@react-navigation/bottom-tabs';
+import {DataProvider} from "@/contexts/DataProvider";
 
 /**
  * TabLayout – FINAL routing & colours
@@ -52,6 +53,7 @@ export default function TabLayout() {
                 },
             }}
         >
+
             {/* Locations – green */}
             <Tabs.Screen
                 name="location"
@@ -75,6 +77,7 @@ export default function TabLayout() {
                     tabBarIcon: renderIcon('settings-outline', '#007AFF'),
                 }}
             />
+
         </Tabs>
     );
 }
