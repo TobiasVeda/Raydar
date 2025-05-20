@@ -11,6 +11,7 @@ import {GeoPoint} from "firebase/firestore";
 import {signIn} from "@/services/auth";
 import {requestNotificationPermission} from "@/services/notification";
 import {SetReminder} from "@/components/SetReminder";
+import {useData} from "@/contexts/DataProvider";
 
 const ExploreScreen: FC = () => {
     const [currentLoc, setCurrentLoc] = useState(new GeoPoint(0, 0));
@@ -20,14 +21,19 @@ const ExploreScreen: FC = () => {
     const [forecastData, setForecastData] = useState<UvStrength[]>([]);
     useEffect(() => {
         const updateMain = async ()=>{
+
             let loc = await getCurrentLocation();
             if (loc == null){
                 setCurrentCity("Location Permission Denied")
                 return;
             }
+            console.log("1");
             let forecast = await getUvForecast(loc!.lat, loc!.lon);
+            console.log("2");
             let city = await getNameFromCoordinate(loc!.lat, loc!.lon);
+            console.log("3");
             let longTerm = get24HourForecast(forecast);
+            console.log("4");
             setCurrentLoc(new GeoPoint(loc!.lat, loc!.lon));
             setCurrentUv(forecast[0].strength);
             setCurrentTemp(forecast[0].temperature);
@@ -42,7 +48,8 @@ const ExploreScreen: FC = () => {
 
     useEffect(() => {
         const x = async () => {
-            await signIn("raydar.contact@gmail.com", "Password1.");
+            // await signIn("raydar.contact@gmail.com", "Password1.");
+            // getData();
         }
         x();
     }, []);

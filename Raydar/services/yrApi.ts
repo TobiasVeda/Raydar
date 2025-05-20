@@ -11,13 +11,22 @@ export const getCompleteData = async (lat:number, lon:number) => {
     let URL2 = "&lon=";
     let URL = URL1 + lat.toString() + URL2 + lon.toString();
 
-    let response = await fetch(URL);
+    let response = await fetch(URL, {
+        method: "GET",
+        headers: {
+            "Accept"       : "application/json",
+            "Content-Type" : "application/json",
+            "User-Agent"   : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
+        }
+    });
     return await response.json();
 }
 
 
 export const getUvForecast = async (lat:number, lon:number) => {
+    console.log("abc");
     let data = await getCompleteData(lat, lon);
+    console.log(data);
 
     let trimmedData:UvStrength[] = [];
 
