@@ -60,6 +60,9 @@ export const MainUvForecast: FC<Props> = ({ uv, city, temperature, coord }) => {
             if (await getFavouriteState(currentLoc.latitude, currentLoc.longitude)) {
                 setStarState("star");
                 setStarColor("gold");
+            } else {
+                setStarState("star-outline");
+                setStarColor("grey");
             }
         };
         fetchStarState();

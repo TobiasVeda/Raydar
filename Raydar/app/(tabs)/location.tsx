@@ -15,32 +15,25 @@ import {useData} from "@/contexts/DataProvider";
 
 
 const LocationScreen: FC = () => {
-    const {favouriteLocations} = useData();
+    const { favouriteLocations, removeAsFavourite } = useData();
     const [locations, setLocations] = useState<Location[]>([]);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            updateForecast();
-        },5*60*1000); // 5 minutes
-    }, []);
-
-    const updateForecast = async ()=>{
-        let temp:Location[] = [];
-
-        if (favouriteLocations.length){
-            for (let i = 0; i < favouriteLocations.length; i++) {
-                let name = await getNameFromCoordinate(favouriteLocations[i].latitude, favouriteLocations[i].longitude);
-                let uv = (await getUvForecast(favouriteLocations[i].latitude, favouriteLocations[i].longitude))[0].strength;
-                temp[i] = {name:name, uv:uv};
-            }
+    const updateForecast = async () => {
+        let temp: Location[] = [];
+        for (let i = 0; i < favouriteLocations.length; i++) {
+            const { latitude, longitude } = favouriteLocations[i];
+            const name = await getNameFromCoordinate(latitude, longitude);
+            const uv = (await getUvForecast(latitude, longitude))[0].strength;
+            temp.push({ name, uv, latitude, longitude });
         }
         setLocations(temp);
-    }
+    };
 
     useEffect(() => {
         updateForecast();
+        const interval = setInterval(updateForecast, 5 * 60 * 1000);
+        return () => clearInterval(interval);
     }, [favouriteLocations]);
-
 
     const swipeableRefs = useRef<Array<GestureSwipeable | null>>([]);
     const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -51,19 +44,17 @@ const LocationScreen: FC = () => {
             setOpenIndex(null);
         } else {
             swipeableRefs.current.forEach((ref, i) => {
-                if (ref && i !== index) {
-                    ref.close();
-                }
+                if (ref && i !== index) ref.close();
             });
             swipeableRefs.current[index]?.openRight();
             setOpenIndex(index);
         }
     };
 
-    const handleDelete = (index: number) => {
+    const handleDelete = async (loc: Location, index: number) => {
+        await removeAsFavourite(loc.latitude, loc.longitude);
         swipeableRefs.current[index]?.close();
-        setLocations(prev => prev.filter((_, i) => i !== index));
-        if (openIndex === index) setOpenIndex(null);
+        setOpenIndex(null);
     };
 
     return (
@@ -81,11 +72,11 @@ const LocationScreen: FC = () => {
 
                 {locations.map((loc, idx) => (
                     <LocationCard
-                        key={loc.name} // Should add checks when adding to prevent duplicates
+                        key={loc.name}
                         ref={r => { swipeableRefs.current[idx] = r; }}
                         loc={loc}
-                        onDelete={() => handleDelete(idx)}
                         onPressDots={() => handlePressDots(idx)}
+                        onDelete={() => handleDelete(loc, idx)}
                     />
                 ))}
 
