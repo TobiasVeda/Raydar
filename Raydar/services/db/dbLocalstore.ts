@@ -2,13 +2,13 @@ import { GeoPoint } from "firebase/firestore";
 import {UserDocument} from "@/services/db/db";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const CURRENT_KEY = "@currentLocation";
+const FAVOURITES_KEY = "@favouriteLocations";
+
 export const setUserdataToLocalstore = async (newUser:UserDocument)=>{
     try {
-        const currentLocation = JSON.stringify(newUser.currentLocation);
-        const favouriteLocation = JSON.stringify(newUser.favouriteLocations);
-
-        await AsyncStorage.setItem('@currentLocation', currentLocation);
-        await AsyncStorage.setItem('@favouriteLocation', favouriteLocation);
+        await AsyncStorage.setItem(CURRENT_KEY, JSON.stringify(newUser.currentLocation));
+        await AsyncStorage.setItem(FAVOURITES_KEY, JSON.stringify(newUser.favouriteLocations));
         return true;
     } catch (e) {
         console.error("Error adding document: ");
@@ -18,39 +18,25 @@ export const setUserdataToLocalstore = async (newUser:UserDocument)=>{
 }
 
 export const getUserdataFromLocalstore = async ()=>{
-    let temp:UserDocument[] = [];
+    let rawCurrent = await AsyncStorage.getItem(CURRENT_KEY);
+    let rawFavourites = await AsyncStorage.getItem(FAVOURITES_KEY);
 
-    const currentLocation = await AsyncStorage.getItem('@currentLocation');
-    const currentLocationObj:
-        | { latitude: number; longitude: number }
-        | null = currentLocation ? JSON.parse(currentLocation) : null
-
-    const favouriteLocation = await AsyncStorage.getItem('@favouriteLocations');
-    const favouriteLocationObj:
-        | { latitude: number; longitude: number }[]
-        | [] = currentLocation ? JSON.parse(currentLocation) : []
+    if (!rawCurrent) rawCurrent = "";
+    if (!rawFavourites) rawFavourites = "";
 
 
-    if (!currentLocationObj) {
-        throw new Error('No location saved in local storage');
-    }
-    const currLocation = new GeoPoint(
-        currentLocationObj.latitude,
-        currentLocationObj.longitude
-    )
+    const currentObj = JSON.parse(rawCurrent) as {latitude: number; longitude: number};
+    const favArray = JSON.parse(rawFavourites) as Array<{latitude: number; longitude: number}>;
 
-    const favLocations = favouriteLocationObj.map(
-        location => new GeoPoint(location.latitude, location.longitude)
-    )
+    const currentGeo = new GeoPoint(currentObj.latitude, currentObj.longitude);
+    const favGeos = favArray.map(
+        loc => new GeoPoint(loc.latitude, loc.longitude)
+    );
 
-    const user: UserDocument = {
-        username: '',
-        currentLocation: currLocation,
-        favouriteLocations: favLocations,
+    return {
+        username: "",
+        currentLocation: currentGeo,
+        favouriteLocations: favGeos,
         notificationsEnabled: false
-    }
-
-    temp.push(user);
-
-    return temp[0];
+    };
 }

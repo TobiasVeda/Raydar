@@ -12,16 +12,20 @@ export interface UserDocument{
 
 export const setUserdata = async (newUser:UserDocument)=>{
     if (auth.currentUser){
+        console.log("Setting user data from firebase");
         return await setUserdataToFirestore(newUser);
     } else{
-        //return await setUserdataToLocalstore(newUser);
+        console.log("Setting user data from local storage");
+        return await setUserdataToLocalstore(newUser);
     }
 }
 
 export const getUserdata = async ()=>{
     if (auth.currentUser){
+        console.log("Getting user data from firebase");
         return await getUserdataFromFirestore();
     } else{
-        //return await getUserdataFromLocalstore();
+        console.log("Getting user data locally");
+        return await getUserdataFromLocalstore();
     }
 }
