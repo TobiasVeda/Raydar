@@ -5,8 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { GestureHandlerRootView } from 'react-native-gesture-handler'; // 👈 Importer dette
-
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { DataProvider } from '@/contexts/DataProvider';
 
