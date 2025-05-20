@@ -1,4 +1,4 @@
-import React, { forwardRef, FC } from 'react';
+import React, { forwardRef } from 'react';
 import {
     View,
     Text,
@@ -13,6 +13,8 @@ import { FavouriteLocation } from '@/components/FavouriteLocation';
 export interface Location {
     name: string;
     uv: number;
+    latitude: number;
+    longitude: number;
 }
 
 interface LocationCardProps {
@@ -22,7 +24,6 @@ interface LocationCardProps {
     style?: ViewStyle;
 }
 
-// forwardRef so parent can call openRight/close()
 export const LocationCard = forwardRef<GestureSwipeable, LocationCardProps>(
     ({ loc, onDelete, onPressDots, style }, ref) => (
         <Swipeable
