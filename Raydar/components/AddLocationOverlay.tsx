@@ -27,9 +27,9 @@ export const AddLocationOverlay: React.FC<Props> = ({ visible, onClose, onSearch
     const [results, setResults] = useState<CoordinateResult[]>([]);
 
     const handleSearch = async () => {
-        console.log('Searching for:', query);
+
         const coords = await getCoordinatesFromName(query);
-        console.log('Raw results from geocoder:', coords);
+
         if (coords && coords.length > 0) {
             const parsed = coords
                 .map((c: any) => ({
@@ -42,7 +42,7 @@ export const AddLocationOverlay: React.FC<Props> = ({ visible, onClose, onSearch
                 .filter(c => !isNaN(c.lat) && !isNaN(c.lon))
                 .sort((a, b) => b.importance - a.importance)
                 .slice(0, 4);
-            console.log('Filtered and parsed results:', parsed);
+
             setResults(parsed);
         }
     };
@@ -91,7 +91,7 @@ export const AddLocationOverlay: React.FC<Props> = ({ visible, onClose, onSearch
                                     <TouchableOpacity
                                         style={styles.resultItem}
                                         onPress={() => {
-                                            console.log('User selected:', item);
+
                                             handleSelect(item.lat, item.lon);
                                         }}
                                     >
