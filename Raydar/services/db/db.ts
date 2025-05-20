@@ -14,7 +14,7 @@ export const setUserdata = async (newUser:UserDocument)=>{
     if (auth.currentUser){
         return await setUserdataToFirestore(newUser);
     } else{
-        return await setUserdataToLocalstore(newUser);
+        //return await setUserdataToLocalstore(newUser);
     }
 }
 
@@ -22,6 +22,6 @@ export const getUserdata = async ()=>{
     if (auth.currentUser){
         return await getUserdataFromFirestore();
     } else{
-        return await getUserdataFromLocalstore();
+        //return await getUserdataFromLocalstore();
     }
 }
