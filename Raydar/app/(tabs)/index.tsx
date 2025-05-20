@@ -27,13 +27,9 @@ const ExploreScreen: FC = () => {
                 setCurrentCity("Location Permission Denied")
                 return;
             }
-            console.log("1");
             let forecast = await getUvForecast(loc!.lat, loc!.lon);
-            console.log("2");
             let city = await getNameFromCoordinate(loc!.lat, loc!.lon);
-            console.log("3");
             let longTerm = get24HourForecast(forecast);
-            console.log("4");
             setCurrentLoc(new GeoPoint(loc!.lat, loc!.lon));
             setCurrentUv(forecast[0].strength);
             setCurrentTemp(forecast[0].temperature);
