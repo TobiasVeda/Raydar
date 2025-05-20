@@ -1,4 +1,4 @@
-import React, {FC, useState, useRef, useEffect, useCallback} from 'react';
+import React, { FC, useState, useRef, useEffect } from 'react';
 import {
     View,
     Text,
@@ -9,14 +9,17 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import type { Swipeable as GestureSwipeable } from 'react-native-gesture-handler';
 import { LocationCard, Location } from '@/components/LocationCard';
-import {getUvForecast} from "@/services/yrApi";
-import {getNameFromCoordinate} from "@/services/geocode";
-import {useData} from "@/contexts/DataProvider";
+import { getUvForecast } from '@/services/yrApi';
+import { getNameFromCoordinate, getCoordinatesFromName } from '@/services/geocode';
+import { useData } from '@/contexts/DataProvider';
+import { AddLocationOverlay } from '@/components/AddLocationOverlay';
+import { KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
 
 
 const LocationScreen: FC = () => {
-    const { favouriteLocations, removeAsFavourite } = useData();
+    const { favouriteLocations, removeAsFavourite, addAsFavourite } = useData();
     const [locations, setLocations] = useState<Location[]>([]);
+    const [showSearch, setShowSearch] = useState(false);
 
     const updateForecast = async () => {
         let temp: Location[] = [];
@@ -57,6 +60,11 @@ const LocationScreen: FC = () => {
         setOpenIndex(null);
     };
 
+    const handleSearch = (lat: number, lon: number) => {
+        addAsFavourite(lat, lon);
+        setShowSearch(false);
+    };
+
     return (
         <View style={styles.container}>
             <ScrollView
@@ -80,10 +88,20 @@ const LocationScreen: FC = () => {
                     />
                 ))}
 
-                <TouchableOpacity style={styles.addBtn} activeOpacity={0.8}>
+                <TouchableOpacity
+                    style={styles.addBtn}
+                    activeOpacity={0.8}
+                    onPress={() => setShowSearch(true)}
+                >
                     <Text style={styles.addTxt}>+ Add New</Text>
                 </TouchableOpacity>
             </ScrollView>
+
+            <AddLocationOverlay
+                visible={showSearch}
+                onClose={() => setShowSearch(false)}
+                onSearch={handleSearch}
+            />
         </View>
     );
 };

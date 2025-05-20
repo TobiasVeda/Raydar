@@ -28,12 +28,12 @@ export const DataProvider = ({ children }:any) => {
         setNotificationsEnabled(document.notificationsEnabled);
     }
     const pushData = async ()=>{
-        return await setUserdata({
+        await setUserdata({
             username: username,
             currentLocation: currentLocation,
             favouriteLocations: favouriteLocations,
             notificationsEnabled: notificationsEnabled
-        })
+        });
     }
 
     const getFavouriteState = async (lat:number, lon:number)=>{
@@ -50,12 +50,16 @@ export const DataProvider = ({ children }:any) => {
         return false;
     }
 
-    const addAsFavourite = async (lat:number, lon:number)=>{
-        let temp = JSON.parse(JSON.stringify(favouriteLocations));
-        temp.push(new GeoPoint(lat, lon));
-        setFavouriteLocations(temp);
+    const addAsFavourite = async (lat: number, lon: number) => {
+        if (typeof lat !== 'number' || typeof lon !== 'number' || isNaN(lat) || isNaN(lon)) {
+            console.warn('Invalid coordinates provided to addAsFavourite:', lat, lon);
+            return false;
+        }
+
+        setFavouriteLocations(prev => [...prev, new GeoPoint(lat, lon)]);
         return true;
-    }
+    };
+
 
     const removeAsFavourite = async (lat:number, lon:number)=>{
         let temp = JSON.parse(JSON.stringify(favouriteLocations));
@@ -72,6 +76,9 @@ export const DataProvider = ({ children }:any) => {
         }
         return false;
     }
+    useEffect(() => {
+        console.log(favouriteLocations)
+    }, [favouriteLocations]);
 
     useEffect(() => {
         getData();
