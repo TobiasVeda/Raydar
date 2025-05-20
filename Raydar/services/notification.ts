@@ -31,10 +31,9 @@ export const sendPushNotification = async (expoPushToken: string) => {
         },
         body: JSON.stringify(message),
     });
-}
+};
 
 export const requestNotificationPermission = async () => {
-
     if (Platform.OS === 'android') {
         await Notifications.setNotificationChannelAsync('default', {
             name: 'default',
@@ -66,38 +65,36 @@ export const requestNotificationPermission = async () => {
     if (!projectId) {
         console.log('Project ID not found');
     }
+
     try {
         const pushTokenString = (
-            await Notifications.getExpoPushTokenAsync({projectId,})
+            await Notifications.getExpoPushTokenAsync({ projectId })
         ).data;
         console.log('Notification permission granted!');
         return pushTokenString;
-
     } catch (e: unknown) {
         console.log(`${e}`);
         return null;
     }
-}
+};
 
+export const testMessage = async () => {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+};
 
-
-export const testMessage = async ()=>{
-        await Notifications.cancelAllScheduledNotificationsAsync();
-}
-
-export const scheduleReapplyReminder = async (minutes:number)=>{
-    if (Platform.OS != "web") {
+export const scheduleReapplyReminder = async (minutes: number) => {
+    if (Platform.OS !== 'web') {
         await Notifications.scheduleNotificationAsync({
             content: {
-                title: "penis",
-                body: 'Protection from sunscreen is greatly diminished',
-                data: {data: 'data', test: {test1: 'more data'}},
+                title: "Sunscreen Reminder",
+                body: 'Time to reapply your sunscreen!',
+                data: { type: 'reapply_reminder' },
             },
             trigger: {
                 type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-                seconds: (minutes*60),
+                seconds: 60, // fixed 1 minute for testing
                 repeats: false,
             },
         });
     }
-}
+};
