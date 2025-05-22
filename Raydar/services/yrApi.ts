@@ -33,9 +33,7 @@ export const getCompleteData = async (lat:number, lon:number) => {
 
 
 export const getUvForecast = async (lat:number, lon:number) => {
-    console.log("abc");
     let data = await getCompleteData(lat, lon);
-    console.log(data);
 
     let trimmedData:UvStrength[] = [];
 
