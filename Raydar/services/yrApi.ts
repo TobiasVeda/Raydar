@@ -51,7 +51,7 @@ export const getUvForecast = async (lat:number, lon:number) => {
 export const get24HourForecast = (trimmedData:UvStrength[]) => {
 
     const now = new Date(trimmedData[2].timestamp);
-    const twentyFourHoursLater = new Date(Math.round(now.getTime()) + 24 * 60 * 60 * 1000); // 12 hours in ms
+    const twentyFourHoursLater = new Date(Math.round(Date.now()) + 24 * 60 * 60 * 1000); // 24 hours in ms
     const index = trimmedData.findIndex(item => new Date(item.timestamp) > twentyFourHoursLater);
 
     if (index === -1) {
